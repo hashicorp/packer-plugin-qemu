@@ -2,10 +2,10 @@
 modeline: |
   vim: set ft=pandoc:
 description: |
-    The Qemu Packer builder is able to create KVM and Xen virtual machine images.
+  The Qemu Packer builder is able to create KVM and Xen virtual machine images.
 layout: docs
-page_title: 'QEMU - Builders'
-sidebar_current: 'docs-builders-qemu'
+page_title: QEMU - Builders
+sidebar_title: QEMU
 ---
 
 # QEMU Builder
@@ -28,8 +28,7 @@ to files, URLS for ISOs and checksums.
 
 ```json
 {
-  "builders":
-  [
+  "builders": [
     {
       "type": "qemu",
       "iso_url": "http://mirror.raystedman.net/centos/6/isos/x86_64/CentOS-6.9-x86_64-minimal.iso",
@@ -60,7 +59,7 @@ This is an example only, and will time out waiting for SSH because we have not
 provided a kickstart file. You must add a valid kickstart file to the
 "http_directory" and then provide the file in the "boot_command" in order for
 this build to run. We recommend you check out the
-[Community Templates](https://www.packer.io/community-tools.html#templates)
+[Community Templates](/community-tools#templates)
 for a practical usage example.
 
 Note that you will need to set `"headless": true` if you are running Packer
@@ -82,58 +81,59 @@ necessary for this build to succeed and can be found further down the page.
 
 ### Optional:
 
-<%= partial "partials/builder/qemu/Config-not-required" %>
+@include 'builder/qemu/Config-not-required.mdx'
 
 ## ISO Configuration
 
-<%= partial "partials/common/ISOConfig" %>
+@include 'common/ISOConfig.mdx'
 
 ### Required:
 
-<%= partial "partials/common/ISOConfig-required" %>
+@include 'common/ISOConfig-required.mdx'
 
 ### Optional:
 
-<%= partial "partials/common/ISOConfig-not-required" %>
+@include 'common/ISOConfig-not-required.mdx'
 
 ## Http directory configuration
 
-<%= partial "partials/common/HTTPConfig" %>
+@include 'common/HTTPConfig.mdx'
+
 ### Optional:
 
-<%= partial "partials/common/HTTPConfig-not-required" %>
+@include 'common/HTTPConfig-not-required.mdx'
 
 ## Floppy configuration
 
-<%= partial "partials/common/FloppyConfig" %>
+@include 'common/FloppyConfig.mdx'
 
 ### Optional:
 
-<%= partial "partials/common/FloppyConfig-not-required" %>
+@include 'common/FloppyConfig-not-required.mdx'
 
 ## Shutdown configuration
 
 ### Optional:
 
-<%= partial "partials/common/shutdowncommand/ShutdownConfig-not-required" %>
-
+@include 'common/shutdowncommand/ShutdownConfig-not-required.mdx'
 
 ## Boot Configuration
 
-<%= partial "partials/common/bootcommand/VNCConfig" %>
-<%= partial "partials/common/bootcommand/BootConfig" %>
+@include 'common/bootcommand/VNCConfig.mdx'
+
+@include 'common/bootcommand/BootConfig.mdx'
 
 ### Optional:
-<%= partial "partials/common/bootcommand/VNCConfig-not-required" %>
-<%= partial "partials/common/bootcommand/BootConfig-not-required" %>
 
+@include 'common/bootcommand/VNCConfig-not-required.mdx'
+
+@include 'common/bootcommand/BootConfig-not-required.mdx'
 
 ### Communicator Configuration
 
 #### Optional:
 
-<%= partial "partials/helper/communicator/Config-not-required" %>
-
+@include 'helper/communicator/Config-not-required.mdx'
 
 ### Troubleshooting
 
