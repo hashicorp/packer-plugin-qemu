@@ -215,7 +215,7 @@ func (b *Builder) newDriver(qemuBinary string) (Driver, error) {
 		return nil, err
 	}
 
-	log.Printf("Qemu path: %s, Qemu Image page: %s", qemuPath, qemuImgPath)
+	log.Printf("Qemu path: %s, Qemu Image path: %s", qemuPath, qemuImgPath)
 	driver := &QemuDriver{
 		QemuPath:    qemuPath,
 		QemuImgPath: qemuImgPath,
