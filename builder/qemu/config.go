@@ -322,6 +322,13 @@ type Config struct {
 	// is the subcommand, and the values are lists of strings for each flag.
 	// Example:
 	//
+	// In HCL:
+	// ```hcl
+	//qemu_img_args {
+	//  convert = ["-o", "preallocation=full"]
+	//  resize  = ["-foo", "bar"]
+	//}
+	// ```
 	// In JSON:
 	// ```json
 	// {
