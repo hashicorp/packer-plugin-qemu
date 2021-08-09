@@ -693,3 +693,21 @@ func TestBuilderPrepare_LoadQemuImgArgs(t *testing.T) {
 	assert.Equal(t, []string{"-baz", "bang"},
 		c.QemuImgArgs.Create, "Create args not loaded properly")
 }
+
+func TestBuilderPrepare_cd_content(t *testing.T) {
+	var c Config
+	config := testConfig()
+
+	config["cd_content"] = map[string]string{
+		"file.txt": "foo",
+	}
+
+	_, err := c.Prepare(config)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(c.CDContent) == 0 {
+		t.Fatal("cd_content empty")
+	}
+}
