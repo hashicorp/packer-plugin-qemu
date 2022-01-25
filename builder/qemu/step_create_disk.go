@@ -76,7 +76,7 @@ func (s *stepCreateDisk) buildCreateCommand(path string, size string, i int, sta
 	if s.DiskImage && s.UseBackingFile && i == 0 {
 		// Use a backing file for the 'main' or 'default' disk
 		isoPath := state.Get("iso_path").(string)
-		command = append(command, "-b", isoPath)
+		command = append(command, "-b", isoPath, "-F", "qcow2")
 	}
 
 	// add user-provided convert args

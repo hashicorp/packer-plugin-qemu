@@ -34,7 +34,7 @@ func Test_buildCreateCommand(t *testing.T) {
 				AdditionalDiskSize: []string{"1M", "2M"},
 			},
 			0,
-			[]string{"create", "-f", "qcow2", "-b", "source.qcow2", "target.qcow2", "1234M"},
+			[]string{"create", "-f", "qcow2", "-b", "source.qcow2", "-F", "qcow2", "target.qcow2", "1234M"},
 			"Basic, happy path, backing store, additional disks",
 		},
 		{
@@ -57,7 +57,7 @@ func Test_buildCreateCommand(t *testing.T) {
 				},
 			},
 			0,
-			[]string{"create", "-f", "qcow2", "-b", "source.qcow2", "-foo", "bar", "target.qcow2", "1234M"},
+			[]string{"create", "-f", "qcow2", "-b", "source.qcow2", "-F", "qcow2", "-foo", "bar", "target.qcow2", "1234M"},
 			"Basic, happy path, backing store set, extra args",
 		},
 		{
@@ -100,7 +100,7 @@ func Test_StepCreateCalled(t *testing.T) {
 				UseBackingFile: true,
 			},
 			[]string{
-				"create", "-f", "qcow2", "-b", "source.qcow2", "target", "1M",
+				"create", "-f", "qcow2", "-b", "source.qcow2", "-F", "qcow2", "target", "1M",
 			},
 			"Basic, happy path, backing store, no additional disks",
 		},
@@ -153,7 +153,7 @@ func Test_StepCreateCalled(t *testing.T) {
 				AdditionalDiskSize: []string{"3M", "8M"},
 			},
 			[]string{
-				"create", "-f", "qcow2", "-b", "source.qcow2", "target", "1M",
+				"create", "-f", "qcow2", "-b", "source.qcow2", "-F", "qcow2", "target", "1M",
 				"create", "-f", "qcow2", "target-1", "3M",
 				"create", "-f", "qcow2", "target-2", "8M",
 			},
