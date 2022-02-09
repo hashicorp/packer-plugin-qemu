@@ -34,6 +34,7 @@ var accels = map[string]struct{}{
 
 var diskInterface = map[string]bool{
 	"ide":         true,
+	"sata":        true,
 	"scsi":        true,
 	"virtio":      true,
 	"virtio-scsi": true,
@@ -115,9 +116,9 @@ type Config struct {
 	// Also see the QEMU documentation.
 	Firmware string `mapstructure:"firmware" required:"false"`
 	// The interface to use for the disk. Allowed values include any of `ide`,
-	// `scsi`, `virtio` or `virtio-scsi`^\*. Note also that any boot commands
-	// or kickstart type scripts must have proper adjustments for resulting
-	// device names. The Qemu builder uses `virtio` by default.
+	// `sata`, `scsi`, `virtio` or `virtio-scsi`^\*. Note also that any boot
+	// commands or kickstart type scripts must have proper adjustments for
+	// resulting device names. The Qemu builder uses `virtio` by default.
 	//
 	// ^\* Please be aware that use of the `scsi` disk interface has been
 	// disabled by Red Hat due to a bug described
