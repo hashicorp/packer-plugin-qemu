@@ -109,12 +109,18 @@ type Config struct {
 	// The number of cpus to use when building the VM.
 	//  The default is `1` CPU.
 	CpuCount int `mapstructure:"cpus" required:"false"`
-	// The firmware file to be used by QEMU, which is to be set by the -bios
-	// option of QEMU. Particularly, this option can be set to use EFI instead
-	// of BIOS, by using "OVMF.fd" from OpenFirmware.
-	// If unset, no -bios option is passed to QEMU, using the default of QEMU.
+	// The firmware file to be used by QEMU
+	// this option could be set to use EFI instead of BIOS,
+	// by using "OVMF.fd" from OpenFirmware, for example.
+	// If unset, QEMU will load its default firmware.
 	// Also see the QEMU documentation.
 	Firmware string `mapstructure:"firmware" required:"false"`
+	// If a firmware file option was provided, this option can be
+	// used to change how qemu will get it.
+	// If false (the default), then the firmware is provided through
+	// the -bios option, but if true, a pflash drive will be used
+	// instead.
+	PFlash bool `mapstructure:"use_pflash" required:"false"`
 	// The interface to use for the disk. Allowed values include any of `ide`,
 	// `sata`, `scsi`, `virtio` or `virtio-scsi`^\*. Note also that any boot
 	// commands or kickstart type scripts must have proper adjustments for
