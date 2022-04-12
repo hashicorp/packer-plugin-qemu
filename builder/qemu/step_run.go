@@ -104,6 +104,11 @@ func (s *stepRun) getDefaultArgs(config *Config, state multistep.StateBag) map[s
 			config.MachineType, config.Accelerator)
 	}
 
+	// Firmware
+	if config.Firmware != "" && !config.PFlash {
+		defaultArgs["-bios"] = config.Firmware
+	}
+
 	// Configure "-netdev" arguments
 	defaultArgs["-netdev"] = fmt.Sprintf("bridge,id=user.0,br=%s", config.NetBridge)
 	if config.NetBridge == "" {
@@ -275,7 +280,7 @@ func (s *stepRun) getDeviceAndDriveArgs(config *Config, state multistep.StateBag
 		}
 	}
 	// Firmware
-	if config.Firmware != "" {
+	if config.Firmware != "" && config.PFlash {
 		driveArgs = append(driveArgs, fmt.Sprintf("file=%s,if=pflash,format=raw,readonly=on", config.Firmware))
 	}
 
