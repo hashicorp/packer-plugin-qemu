@@ -63,6 +63,7 @@ func (b *Builder) Run(ctx context.Context, ui packersdk.Ui, hook packersdk.Hook)
 	steps = append(steps, new(stepPrepareOutputDir),
 		&commonsteps.StepCreateFloppy{
 			Files:       b.config.FloppyConfig.FloppyFiles,
+			Content:     b.config.FloppyConfig.FloppyContent,
 			Directories: b.config.FloppyConfig.FloppyDirectories,
 			Label:       b.config.FloppyConfig.FloppyLabel,
 		},
