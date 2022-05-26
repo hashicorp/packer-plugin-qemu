@@ -143,3 +143,54 @@ func TestCommConfigPrepare_SSHPrivateKey(t *testing.T) {
 		t.Fatal("should not have any warnings")
 	}
 }
+
+func TestCommConfigPrepare_WinHostPort(t *testing.T) {
+	tc := []struct {
+		name               string
+		host, expectedHost string
+		skipNat            bool
+	}{
+		{
+			name:         "skip_nat_mapping false should not change host",
+			host:         "192.168.1.1",
+			expectedHost: "192.168.1.1",
+		},
+		{
+			name:         "skip_nat_mapping true should not change host",
+			host:         "192.168.1.1",
+			expectedHost: "192.168.1.1",
+			skipNat:      true,
+		},
+		{
+			name:         "skip_nat_mapping true with no set host",
+			expectedHost: "127.0.0.1",
+			skipNat:      true,
+		},
+	}
+
+	for _, tt := range tc {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			c := &CommConfig{
+				SkipNatMapping: tt.skipNat,
+				Comm: communicator.Config{
+					Type: "winrm",
+					WinRM: communicator.WinRM{
+						WinRMUser: "tester",
+						WinRMHost: tt.host,
+					},
+				},
+			}
+			warns, errs := c.Prepare(interpolate.NewContext())
+			if len(errs) > 0 {
+				t.Fatalf("should not have error: %s", errs)
+			}
+			if len(warns) != 0 {
+				t.Fatal("should not have any warnings")
+			}
+			if c.Comm.WinRMHost != tt.expectedHost {
+				t.Errorf("unexpected WinRMHost: wanted: %s, got: %s", tt.expectedHost, c.Comm.WinRMHost)
+			}
+		})
+	}
+}
