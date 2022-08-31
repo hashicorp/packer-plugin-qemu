@@ -11,14 +11,7 @@ import (
 	packersdk "github.com/hashicorp/packer-plugin-sdk/packer"
 )
 
-// This step configures the VM to enable the VNC server.
-//
-// Uses:
-//   config *config
-//   ui     packersdk.Ui
-//
-// Produces:
-//   vnc_port int - The port that VNC is configured to listen on.
+// stepConfigureVNC configures the VM to enable the VNC server.
 type stepConfigureVNC struct {
 	l *net.Listener
 }

@@ -12,13 +12,7 @@ import (
 	packersdk "github.com/hashicorp/packer-plugin-sdk/packer"
 )
 
-// This step configures the VM to enable the QMP listener.
-//
-// Uses:
-//   config *config
-//   ui     packersdk.Ui
-//
-// Produces:
+// stepConfigureQMP configures the VM to enable the QMP listener.
 type stepConfigureQMP struct {
 	monitor       *qmp.SocketMonitor
 	QMPSocketPath string
