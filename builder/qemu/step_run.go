@@ -112,7 +112,7 @@ func (s *stepRun) getDefaultArgs(config *Config, state multistep.StateBag) map[s
 	// Configure "-netdev" arguments
 	defaultArgs["-netdev"] = fmt.Sprintf("bridge,id=user.0,br=%s", config.NetBridge)
 	if config.NetBridge == "" {
-		defaultArgs["-netdev"] = fmt.Sprintf("user,id=user.0")
+		defaultArgs["-netdev"] = "user,id=user.0"
 		if config.CommConfig.Comm.Type != "none" {
 			commHostPort := state.Get("commHostPort").(int)
 			defaultArgs["-netdev"] = fmt.Sprintf("user,id=user.0,hostfwd=tcp::%v-:%d", commHostPort, config.CommConfig.Comm.Port())
