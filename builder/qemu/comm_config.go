@@ -3,6 +3,7 @@ package qemu
 
 import (
 	"errors"
+	"log"
 
 	"github.com/hashicorp/packer-plugin-sdk/communicator"
 	"github.com/hashicorp/packer-plugin-sdk/template/interpolate"
@@ -46,11 +47,6 @@ func (c *CommConfig) Prepare(ctx *interpolate.Context) (warnings []string, errs 
 		c.HostPortMax = c.SSHHostPortMax
 	}
 
-	if c.Comm.Host() == "" && c.SkipNatMapping {
-		c.Comm.SSHHost = "127.0.0.1"
-		c.Comm.WinRMHost = "127.0.0.1"
-	}
-
 	if c.HostPortMin == 0 {
 		c.HostPortMin = 2222
 	}
@@ -60,6 +56,13 @@ func (c *CommConfig) Prepare(ctx *interpolate.Context) (warnings []string, errs 
 	}
 
 	errs = c.Comm.Prepare(ctx)
+
+	if c.Comm.Host() == "" && c.SkipNatMapping {
+		log.Printf("Resetting ssh host to 127.0.0.1")
+		c.Comm.SSHHost = "127.0.0.1"
+		c.Comm.WinRMHost = "127.0.0.1"
+	}
+
 	if c.HostPortMin > c.HostPortMax {
 		errs = append(errs,
 			errors.New("host_port_min must be less than host_port_max"))
