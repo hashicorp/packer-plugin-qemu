@@ -70,6 +70,54 @@ func TestCommConfigPrepare_SSHHostPort(t *testing.T) {
 	if len(warns) != 0 {
 		t.Fatal("should not have any warnings")
 	}
+
+	tc := []struct {
+		name               string
+		host, expectedHost string
+		skipNat            bool
+	}{
+		{
+			name:         "skip_nat_mapping false should not change host",
+			host:         "192.168.1.1",
+			expectedHost: "192.168.1.1",
+		},
+		{
+			name:         "skip_nat_mapping true should not change host",
+			host:         "192.168.1.1",
+			expectedHost: "192.168.1.1",
+			skipNat:      true,
+		},
+		{
+			name:         "skip_nat_mapping true with no set host",
+			expectedHost: "127.0.0.1",
+			skipNat:      true,
+		},
+	}
+
+	for _, tt := range tc {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			c := &CommConfig{
+				SkipNatMapping: tt.skipNat,
+				Comm: communicator.Config{
+					SSH: communicator.SSH{
+						SSHUsername: "tester",
+						SSHHost:     tt.host,
+					},
+				},
+			}
+			warns, errs := c.Prepare(interpolate.NewContext())
+			if len(errs) > 0 {
+				t.Fatalf("should not have error: %s", errs)
+			}
+			if len(warns) != 0 {
+				t.Fatal("should not have any warnings")
+			}
+			if c.Comm.SSHHost != tt.expectedHost {
+				t.Errorf("unexpected SSHHost: wanted: %s, got: %s", tt.expectedHost, c.Comm.SSHHost)
+			}
+		})
+	}
 }
 
 func TestCommConfigPrepare_SSHPrivateKey(t *testing.T) {
