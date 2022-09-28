@@ -106,7 +106,8 @@ func Test_UserOverrides(t *testing.T) {
 			"-name", "myvm",
 			"-netdev", "user,id=user.0,hostfwd=tcp::5000-:0",
 			"-vnc", ":5",
-			"-machine", "type=,accel="},
+			"-machine", "type=,accel=",
+			"-smp", "1"},
 			tc.Expected...)
 
 		assert.ElementsMatch(t, args, expected,
@@ -418,7 +419,8 @@ func Test_DriveAndDeviceArgs(t *testing.T) {
 			"-netdev", "user,id=user.0,hostfwd=tcp::5000-:0",
 			"-vnc", ":5",
 			"-machine", "type=,accel=",
-			"-device", ",netdev=user.0"},
+			"-device", ",netdev=user.0",
+			"-smp", "1"},
 			tc.Expected...)
 
 		assert.ElementsMatch(t, args, expected,
@@ -458,6 +460,7 @@ func Test_OptionalConfigOptionsGetSet(t *testing.T) {
 		"-device", ",netdev=user.0",
 		"-drive", "file=/path/to/test.iso,media=cdrom",
 		"-qmp", "unix:qmp_path,server,nowait",
+		"-smp", "1",
 	}
 
 	assert.ElementsMatch(t, args, expected, "password flag should be set, and d drive should be set: %s", args)
@@ -622,31 +625,64 @@ func Test_Defaults(t *testing.T) {
 		},
 		{
 			&Config{
-				CpuCount: 2,
+				QemuSMPConfig: QemuSMPConfig{
+					CpuCount: 2,
+				},
 			},
 			map[string]interface{}{},
 			&stepRun{ui: packersdk.TestUi(t)},
-			[]string{"-smp", "cpus=2,sockets=2"},
-			"both cpus and sockets are set to config's CpuCount",
+			[]string{"-smp", "2"},
+			"cpus are set to config's CpuCount",
 		},
 		{
 			&Config{
-				CpuCount: 2,
+				QemuSMPConfig: QemuSMPConfig{
+					CpuCount:    2,
+					SocketCount: 1,
+				},
 			},
 			map[string]interface{}{},
 			&stepRun{ui: packersdk.TestUi(t)},
-			[]string{"-smp", "cpus=2,sockets=2"},
-			"both cpus and sockets are set to config's CpuCount",
+			[]string{"-smp", "1,sockets=1"},
+			"both cpus and sockets are set to config's CpuCount and SocketCount",
 		},
 		{
 			&Config{
-				CpuCount: 2,
+				QemuSMPConfig: QemuSMPConfig{
+					SocketCount: 2,
+					CoreCount:   5,
+					ThreadCount: 2,
+				},
+			},
+			map[string]interface{}{},
+			&stepRun{ui: packersdk.TestUi(t)},
+			[]string{"-smp", "20,sockets=2,cores=5,threads=2"},
+			"set sockets, cores and threads, implicit vCPU number computed",
+		},
+		{
+			&Config{
+				QemuSMPConfig: QemuSMPConfig{
+					CpuCount:    8,
+					SocketCount: 2,
+					CoreCount:   2,
+				},
+			},
+			map[string]interface{}{},
+			&stepRun{ui: packersdk.TestUi(t)},
+			[]string{"-smp", "4,sockets=2,cores=2"},
+			"set cpus, sockets and cores",
+		},
+		{
+			&Config{
+				QemuSMPConfig: QemuSMPConfig{
+					CpuCount: 2,
+				},
 			},
 			map[string]interface{}{
 				"floppy_path": "/path/to/floppy",
 			},
 			&stepRun{ui: packersdk.TestUi(t)},
-			[]string{"-fda", "/path/to/floppy"},
+			[]string{"-fda", "/path/to/floppy", "-smp", "2"},
 			"floppy path should be set under fda flag, when it exists",
 		},
 		{

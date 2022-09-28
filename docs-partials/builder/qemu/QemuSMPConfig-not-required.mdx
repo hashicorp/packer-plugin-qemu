@@ -1,0 +1,26 @@
+<!-- Code generated from the comments of the QemuSMPConfig struct in builder/qemu/config.go; DO NOT EDIT MANUALLY -->
+
+- `cpus` (int) - The number of virtual cpus to use when building the VM.
+  
+  If undefined, the value will either be `1`, or the product of
+  `sockets * cpus * threads`
+  
+  If this is defined in conjunction with any topology specifier (sockets,
+  cores and/or threads), the smallest of the two will be used.
+  
+  If the cpu count is the only thing specified, qemu's default behaviour
+  regarding topology will be applied.
+  The behaviour depends on the version of qemu; before version 6.2, sockets
+  were preferred to cores, from version 6.2 onwards, cores are preferred.
+
+- `sockets` (int) - The number of sockets to use when building the VM.
+   The default is `1` socket.
+   The socket count must not be higher than the CPU count.
+
+- `cores` (int) - The number of cores per CPU to use when building the VM.
+   The default is `1` core per CPU.
+
+- `threads` (int) - The number of threads per core to use when building the VM.
+   The default is `1` thread per core.
+
+<!-- End of code generated from the comments of the QemuSMPConfig struct in builder/qemu/config.go; -->

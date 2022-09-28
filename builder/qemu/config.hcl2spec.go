@@ -97,10 +97,13 @@ type FlatConfig struct {
 	CDFiles                   []string          `mapstructure:"cd_files" cty:"cd_files" hcl:"cd_files"`
 	CDContent                 map[string]string `mapstructure:"cd_content" cty:"cd_content" hcl:"cd_content"`
 	CDLabel                   *string           `mapstructure:"cd_label" cty:"cd_label" hcl:"cd_label"`
+	CpuCount                  *int              `mapstructure:"cpus" required:"false" cty:"cpus" hcl:"cpus"`
+	SocketCount               *int              `mapstructure:"sockets" required:"false" cty:"sockets" hcl:"sockets"`
+	CoreCount                 *int              `mapstructure:"cores" required:"false" cty:"cores" hcl:"cores"`
+	ThreadCount               *int              `mapstructure:"threads" required:"false" cty:"threads" hcl:"threads"`
 	ISOSkipCache              *bool             `mapstructure:"iso_skip_cache" required:"false" cty:"iso_skip_cache" hcl:"iso_skip_cache"`
 	Accelerator               *string           `mapstructure:"accelerator" required:"false" cty:"accelerator" hcl:"accelerator"`
 	AdditionalDiskSize        []string          `mapstructure:"disk_additional_size" required:"false" cty:"disk_additional_size" hcl:"disk_additional_size"`
-	CpuCount                  *int              `mapstructure:"cpus" required:"false" cty:"cpus" hcl:"cpus"`
 	Firmware                  *string           `mapstructure:"firmware" required:"false" cty:"firmware" hcl:"firmware"`
 	PFlash                    *bool             `mapstructure:"use_pflash" required:"false" cty:"use_pflash" hcl:"use_pflash"`
 	DiskInterface             *string           `mapstructure:"disk_interface" required:"false" cty:"disk_interface" hcl:"disk_interface"`
@@ -235,10 +238,13 @@ func (*FlatConfig) HCL2Spec() map[string]hcldec.Spec {
 		"cd_files":                     &hcldec.AttrSpec{Name: "cd_files", Type: cty.List(cty.String), Required: false},
 		"cd_content":                   &hcldec.AttrSpec{Name: "cd_content", Type: cty.Map(cty.String), Required: false},
 		"cd_label":                     &hcldec.AttrSpec{Name: "cd_label", Type: cty.String, Required: false},
+		"cpus":                         &hcldec.AttrSpec{Name: "cpus", Type: cty.Number, Required: false},
+		"sockets":                      &hcldec.AttrSpec{Name: "sockets", Type: cty.Number, Required: false},
+		"cores":                        &hcldec.AttrSpec{Name: "cores", Type: cty.Number, Required: false},
+		"threads":                      &hcldec.AttrSpec{Name: "threads", Type: cty.Number, Required: false},
 		"iso_skip_cache":               &hcldec.AttrSpec{Name: "iso_skip_cache", Type: cty.Bool, Required: false},
 		"accelerator":                  &hcldec.AttrSpec{Name: "accelerator", Type: cty.String, Required: false},
 		"disk_additional_size":         &hcldec.AttrSpec{Name: "disk_additional_size", Type: cty.List(cty.String), Required: false},
-		"cpus":                         &hcldec.AttrSpec{Name: "cpus", Type: cty.Number, Required: false},
 		"firmware":                     &hcldec.AttrSpec{Name: "firmware", Type: cty.String, Required: false},
 		"use_pflash":                   &hcldec.AttrSpec{Name: "use_pflash", Type: cty.Bool, Required: false},
 		"disk_interface":               &hcldec.AttrSpec{Name: "disk_interface", Type: cty.String, Required: false},
