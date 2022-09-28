@@ -65,6 +65,102 @@ type QemuImgArgs struct {
 	Resize  []string `mapstructure:"resize" required:"false"`
 }
 
+// QemuSMPConfig sets the smp configuration option for the Qemu command-line
+//
+// The smp option sets the number of vCPUs to expose to the VM, the final
+// number of available vCPUs is sockets*cores*threads.
+type QemuSMPConfig struct {
+	// The number of virtual cpus to use when building the VM.
+	//
+	// If undefined, the value will either be `1`, or the product of
+	// `sockets * cpus * threads`
+	//
+	// If this is defined in conjunction with any topology specifier (sockets,
+	// cores and/or threads), the smallest of the two will be used.
+	//
+	// If the cpu count is the only thing specified, qemu's default behaviour
+	// regarding topology will be applied.
+	// The behaviour depends on the version of qemu; before version 6.2, sockets
+	// were preferred to cores, from version 6.2 onwards, cores are preferred.
+	CpuCount int `mapstructure:"cpus" required:"false"`
+	// The number of sockets to use when building the VM.
+	//  The default is `1` socket.
+	//  The socket count must not be higher than the CPU count.
+	SocketCount int `mapstructure:"sockets" required:"false"`
+	// The number of cores per CPU to use when building the VM.
+	//  The default is `1` core per CPU.
+	CoreCount int `mapstructure:"cores" required:"false"`
+	// The number of threads per core to use when building the VM.
+	//  The default is `1` thread per core.
+	ThreadCount int `mapstructure:"threads" required:"false"`
+}
+
+// getDefaultCmdLine returns the smp command-line argument if defined.
+func (c QemuSMPConfig) getDefaultCmdLine() string {
+	totalVCpus := c.getMaxCPUs()
+	if totalVCpus == 0 && c.CpuCount == 0 {
+		return "1"
+	}
+
+	cpuCount := c.CpuCount
+
+	if cpuCount == 0 {
+		log.Printf("CPU count at default value, setting to topology maximum: %d", totalVCpus)
+		cpuCount = totalVCpus
+	}
+
+	if totalVCpus > cpuCount {
+		log.Print("CPU count lower than what's described in topology." +
+			"This will negatively impact performance.")
+	}
+
+	if cpuCount > totalVCpus && totalVCpus != 0 {
+		log.Printf("CPU count is greater than what topology allows, setting to max CPU count of the provided topology: %d", totalVCpus)
+		cpuCount = totalVCpus
+	}
+
+	smpStr := fmt.Sprintf("%d", cpuCount)
+	if c.SocketCount > 0 {
+		smpStr = fmt.Sprintf("%s,sockets=%d", smpStr, c.SocketCount)
+	}
+	if c.CoreCount > 0 {
+		smpStr = fmt.Sprintf("%s,cores=%d", smpStr, c.CoreCount)
+	}
+	if c.ThreadCount > 0 {
+		smpStr = fmt.Sprintf("%s,threads=%d", smpStr, c.ThreadCount)
+	}
+
+	return smpStr
+}
+
+// getMaxCPUs infers the maximum number of CPUs compatible with the optional topology
+//
+// If nothing is defined, 0 will be returned, otherwise this is the product of
+// all non-zero terms in `sockets`, `cores` and `threads`.
+func (c QemuSMPConfig) getMaxCPUs() int {
+	totalVCPUs := c.SocketCount
+
+	if c.CoreCount > 0 && totalVCPUs > 0 {
+		totalVCPUs *= c.CoreCount
+	}
+
+	// If number of sockets were not provided take the number of cores
+	if totalVCPUs == 0 {
+		totalVCPUs = c.CoreCount
+	}
+
+	if c.ThreadCount > 0 && totalVCPUs != 0 {
+		totalVCPUs *= c.ThreadCount
+	}
+
+	// If nothing else was provided, return the thread count
+	if totalVCPUs == 0 {
+		totalVCPUs = c.ThreadCount
+	}
+
+	return totalVCPUs
+}
+
 type Config struct {
 	common.PackerConfig            `mapstructure:",squash"`
 	commonsteps.HTTPConfig         `mapstructure:",squash"`
@@ -74,6 +170,7 @@ type Config struct {
 	CommConfig                     CommConfig `mapstructure:",squash"`
 	commonsteps.FloppyConfig       `mapstructure:",squash"`
 	commonsteps.CDConfig           `mapstructure:",squash"`
+	QemuSMPConfig                  `mapstructure:",squash"`
 	// Use iso from provided url. Qemu must support
 	// curl block device. This defaults to `false`.
 	ISOSkipCache bool `mapstructure:"iso_skip_cache" required:"false"`
@@ -106,9 +203,6 @@ type Config struct {
 	// Each additional disk uses the same disk parameters as the default disk.
 	// Unset by default.
 	AdditionalDiskSize []string `mapstructure:"disk_additional_size" required:"false"`
-	// The number of cpus to use when building the VM.
-	//  The default is `1` CPU.
-	CpuCount int `mapstructure:"cpus" required:"false"`
 	// The firmware file to be used by QEMU
 	// this option could be set to use EFI instead of BIOS,
 	// by using "OVMF.fd" from OpenFirmware, for example.
@@ -507,11 +601,6 @@ func (c *Config) Prepare(raws ...interface{}) ([]string, error) {
 		c.MemorySize = 512
 	}
 
-	if c.CpuCount < 1 {
-		log.Printf("CpuCount %d too small, using default: 1", c.CpuCount)
-		c.CpuCount = 1
-	}
-
 	if c.VNCBindAddress == "" {
 		c.VNCBindAddress = "127.0.0.1"
 	}
@@ -604,6 +693,20 @@ func (c *Config) Prepare(raws ...interface{}) ([]string, error) {
 	if _, ok := diskDZeroes[c.DetectZeroes]; !ok {
 		errs = packersdk.MultiErrorAppend(
 			errs, errors.New("unrecognized disk detect zeroes setting"))
+	}
+
+	if c.CpuCount < 0 {
+		errs = packersdk.MultiErrorAppend(errs, errors.New("cpus must be a positive number"))
+	}
+
+	if c.SocketCount < 0 {
+		errs = packersdk.MultiErrorAppend(errs, errors.New("sockets must be a positive number"))
+	}
+	if c.CoreCount < 0 {
+		errs = packersdk.MultiErrorAppend(errs, errors.New("cores must be a positive number"))
+	}
+	if c.ThreadCount < 0 {
+		errs = packersdk.MultiErrorAppend(errs, errors.New("threads must be a positive number"))
 	}
 
 	if !c.PackerForce {

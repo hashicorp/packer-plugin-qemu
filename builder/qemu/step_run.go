@@ -145,9 +145,7 @@ func (s *stepRun) getDefaultArgs(config *Config, state multistep.StateBag) map[s
 	defaultArgs["-m"] = fmt.Sprintf("%dM", config.MemorySize)
 
 	// Configure "-smp" processor hardware arguments
-	if config.CpuCount > 1 {
-		defaultArgs["-smp"] = fmt.Sprintf("cpus=%d,sockets=%d", config.CpuCount, config.CpuCount)
-	}
+	defaultArgs["-smp"] = config.QemuSMPConfig.getDefaultCmdLine()
 
 	// Configure "-fda" floppy disk attachment
 	if floppyPathRaw, ok := state.GetOk("floppy_path"); ok {
