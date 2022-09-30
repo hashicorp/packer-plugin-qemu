@@ -502,7 +502,24 @@ type Config struct {
 	// `virtio-scsi`. The Qemu builder uses `virtio` by default.
 	// Some ARM64 images require `virtio-scsi`.
 	CDROMInterface string `mapstructure:"cdrom_interface" required:"false"`
-
+	// Use a virtual (emulated) TPM device to expose to the VM.
+	VTPM bool `mapstructure:"vtpm" required:"false"`
+	// Use version 1.2 of the TPM specification for the emulated TPM.
+	//
+	// By default, we use version 2.0 of the TPM specs for the emulated TPM,
+	// if you want to force version 1.2, set this option to true.
+	VTPMUseTPM1 bool `mapstructure:"use_tpm1" required:"false"`
+	// The TPM device type to inject in the qemu command-line
+	//
+	// This is required to be specified for some platforms, as the device has to
+	// behave differently depending on the architecture.
+	//
+	// As per the docs:
+	//
+	//  * x86: tpm-tis (default)
+	//  * ARM: tpm-tis-device
+	//  * PPC (p-series): tpm-spapr
+	TPMType string `mapstructure:"tpm_device_type" required:"false"`
 	// TODO(mitchellh): deprecate
 	RunOnce bool `mapstructure:"run_once"`
 
@@ -619,6 +636,10 @@ func (c *Config) Prepare(raws ...interface{}) ([]string, error) {
 
 	if c.Format == "" {
 		c.Format = "qcow2"
+	}
+
+	if c.TPMType == "" {
+		c.TPMType = "tpm-tis"
 	}
 
 	errs = packersdk.MultiErrorAppend(errs, c.FloppyConfig.Prepare(&c.ctx)...)

@@ -332,4 +332,22 @@
   `virtio-scsi`. The Qemu builder uses `virtio` by default.
   Some ARM64 images require `virtio-scsi`.
 
+- `vtpm` (bool) - Use a virtual (emulated) TPM device to expose to the VM.
+
+- `use_tpm1` (bool) - Use version 1.2 of the TPM specification for the emulated TPM.
+  
+  By default, we use version 2.0 of the TPM specs for the emulated TPM,
+  if you want to force version 1.2, set this option to true.
+
+- `tpm_device_type` (string) - The TPM device type to inject in the qemu command-line
+  
+  This is required to be specified for some platforms, as the device has to
+  behave differently depending on the architecture.
+  
+  As per the docs:
+  
+   * x86: tpm-tis (default)
+   * ARM: tpm-tis-device
+   * PPC (p-series): tpm-spapr
+
 <!-- End of code generated from the comments of the Config struct in builder/qemu/config.go; -->

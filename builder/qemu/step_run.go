@@ -173,6 +173,12 @@ func (s *stepRun) getDefaultArgs(config *Config, state multistep.StateBag) map[s
 		}
 	}
 
+	if config.VTPM {
+		vtpmSockPath := state.Get(swtpmSocketPath)
+		defaultArgs["-chardev"] = fmt.Sprintf("socket,id=vtpm,path=%s", vtpmSockPath)
+		defaultArgs["-tpmdev"] = "emulator,id=tpm0,chardev=vtpm"
+	}
+
 	deviceArgs, driveArgs := s.getDeviceAndDriveArgs(config, state)
 	defaultArgs["-device"] = deviceArgs
 	defaultArgs["-drive"] = driveArgs
@@ -280,6 +286,11 @@ func (s *stepRun) getDeviceAndDriveArgs(config *Config, state multistep.StateBag
 	// Firmware
 	if config.Firmware != "" && config.PFlash {
 		driveArgs = append(driveArgs, fmt.Sprintf("file=%s,if=pflash,format=raw,readonly=on", config.Firmware))
+	}
+
+	// TPM
+	if config.VTPM {
+		deviceArgs = append(deviceArgs, fmt.Sprintf("%s,tpmdev=tpm0", config.TPMType))
 	}
 
 	return deviceArgs, driveArgs

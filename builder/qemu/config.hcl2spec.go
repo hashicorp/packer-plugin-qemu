@@ -136,6 +136,9 @@ type FlatConfig struct {
 	VNCPortMax                *int              `mapstructure:"vnc_port_max" cty:"vnc_port_max" hcl:"vnc_port_max"`
 	VMName                    *string           `mapstructure:"vm_name" required:"false" cty:"vm_name" hcl:"vm_name"`
 	CDROMInterface            *string           `mapstructure:"cdrom_interface" required:"false" cty:"cdrom_interface" hcl:"cdrom_interface"`
+	VTPM                      *bool             `mapstructure:"vtpm" required:"false" cty:"vtpm" hcl:"vtpm"`
+	VTPMUseTPM1               *bool             `mapstructure:"use_tpm1" required:"false" cty:"use_tpm1" hcl:"use_tpm1"`
+	TPMType                   *string           `mapstructure:"tpm_device_type" required:"false" cty:"tpm_device_type" hcl:"tpm_device_type"`
 	RunOnce                   *bool             `mapstructure:"run_once" cty:"run_once" hcl:"run_once"`
 }
 
@@ -277,6 +280,9 @@ func (*FlatConfig) HCL2Spec() map[string]hcldec.Spec {
 		"vnc_port_max":                 &hcldec.AttrSpec{Name: "vnc_port_max", Type: cty.Number, Required: false},
 		"vm_name":                      &hcldec.AttrSpec{Name: "vm_name", Type: cty.String, Required: false},
 		"cdrom_interface":              &hcldec.AttrSpec{Name: "cdrom_interface", Type: cty.String, Required: false},
+		"vtpm":                         &hcldec.AttrSpec{Name: "vtpm", Type: cty.Bool, Required: false},
+		"use_tpm1":                     &hcldec.AttrSpec{Name: "use_tpm1", Type: cty.Bool, Required: false},
+		"tpm_device_type":              &hcldec.AttrSpec{Name: "tpm_device_type", Type: cty.String, Required: false},
 		"run_once":                     &hcldec.AttrSpec{Name: "run_once", Type: cty.Bool, Required: false},
 	}
 	return s
