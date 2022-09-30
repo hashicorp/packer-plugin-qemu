@@ -61,6 +61,11 @@ func (b *Builder) Run(ctx context.Context, ui packersdk.Ui, hook packersdk.Hook)
 	}
 
 	steps = append(steps, new(stepPrepareOutputDir),
+		&stepCreatevTPM{
+			enableVTPM: b.config.VTPM,
+			vtpmType:   b.config.TPMType,
+			isTPM1:     b.config.VTPMUseTPM1,
+		},
 		&commonsteps.StepCreateFloppy{
 			Files:       b.config.FloppyConfig.FloppyFiles,
 			Content:     b.config.FloppyConfig.FloppyContent,
