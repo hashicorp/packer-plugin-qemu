@@ -66,6 +66,13 @@ jobs:
     steps:
       - build-and-persist-plugin-binary:
           GOOS: openbsd
+  build_linux_ppc64le:
+    executor: golang
+    working_directory: ~/go/src/github.com/hashicorp/packer-plugin-qemu
+    steps:
+      - build-and-persist-plugin-binary:
+          GOOS: linux
+          GOARCH: ppc64le
   store_artifacts:
     executor: golang
     steps:
@@ -85,6 +92,7 @@ workflows:
       - build_openbsd
       - build_solaris
       - build_windows
+      - build_linux_ppc64le
       - store_artifacts:
           requires:
             - build_darwin
@@ -93,4 +101,4 @@ workflows:
             - build_openbsd
             - build_solaris
             - build_windows
-  
+            - build_linux_ppc64le
