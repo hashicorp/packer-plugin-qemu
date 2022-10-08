@@ -139,6 +139,7 @@ type FlatConfig struct {
 	VTPM                      *bool             `mapstructure:"vtpm" required:"false" cty:"vtpm" hcl:"vtpm"`
 	VTPMUseTPM1               *bool             `mapstructure:"use_tpm1" required:"false" cty:"use_tpm1" hcl:"use_tpm1"`
 	TPMType                   *string           `mapstructure:"tpm_device_type" required:"false" cty:"tpm_device_type" hcl:"tpm_device_type"`
+	BootSteps                 [][]string        `mapstructure:"boot_steps" required:"false" cty:"boot_steps" hcl:"boot_steps"`
 	RunOnce                   *bool             `mapstructure:"run_once" cty:"run_once" hcl:"run_once"`
 }
 
@@ -283,6 +284,7 @@ func (*FlatConfig) HCL2Spec() map[string]hcldec.Spec {
 		"vtpm":                         &hcldec.AttrSpec{Name: "vtpm", Type: cty.Bool, Required: false},
 		"use_tpm1":                     &hcldec.AttrSpec{Name: "use_tpm1", Type: cty.Bool, Required: false},
 		"tpm_device_type":              &hcldec.AttrSpec{Name: "tpm_device_type", Type: cty.String, Required: false},
+		"boot_steps":                   &hcldec.AttrSpec{Name: "boot_steps", Type: cty.List(cty.List(cty.String)), Required: false},
 		"run_once":                     &hcldec.AttrSpec{Name: "run_once", Type: cty.Bool, Required: false},
 	}
 	return s

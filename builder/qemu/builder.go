@@ -118,6 +118,7 @@ func (b *Builder) Run(ctx context.Context, ui packersdk.Ui, hook packersdk.Hook)
 			QMPSocketPath: b.config.QMPSocketPath,
 		},
 		&stepTypeBootCommand{},
+		&stepTypeBootSteps{},
 		&stepWaitGuestAddress{
 			CommunicatorType: b.config.CommConfig.Comm.Type,
 			NetBridge:        b.config.NetBridge,
