@@ -111,6 +111,11 @@ func (b *Builder) Run(ctx context.Context, ui packersdk.Ui, hook packersdk.Hook)
 			NetBridge:        b.config.NetBridge,
 		},
 		new(stepConfigureVNC),
+		&stepPrepareEfivars{
+			EFIEnabled: b.config.QemuEFIBootConfig.EnableEFI,
+			OutputDir:  b.config.OutputDir,
+			SourcePath: b.config.QemuEFIBootConfig.OVMFVars,
+		},
 		&stepRun{
 			DiskImage: b.config.DiskImage,
 		},

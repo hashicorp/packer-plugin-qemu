@@ -161,6 +161,50 @@ func (c QemuSMPConfig) getMaxCPUs() int {
 	return totalVCPUs
 }
 
+// Booting in EFI mode
+//
+// Use these options if wanting to boot on a UEFI firmware, as the options to
+// do so are different from what BIOS (default) booting will require.
+type QemuEFIBootConfig struct {
+	// Boot in EFI mode instead of BIOS. This is required for more modern
+	// guest OS. If either or both of `efi_firmware_code` or
+	// `efi_firmware_vars` are defined, this will implicitely be set to `true`.
+	//
+	// NOTE: when using a Secure-Boot enabled firmware, the machine type has
+	// to be q35, otherwise qemu will not boot.
+	EnableEFI bool `mapstructure:"efi_boot" required:"false"`
+	// Path to the CODE part of OVMF (or other compatible firmwares)
+	// The OVMF_CODE.fd file contains the bootstrap code for booting in EFI
+	// mode, and requires a separate VARS.fd file to be able to persist data
+	// between boot cycles.
+	//
+	// Default: /usr/share/OVMF/OVMF_CODE.fd
+	OVMFCode string `mapstructure:"efi_firmware_code" required:"false"`
+	// Path to the VARS corresponding to the OVMF code file.
+	//
+	// Default: /usr/share/OVMF/OVMF_VARS.fd
+	OVMFVars string `mapstructure:"efi_firmware_vars" required:"false"`
+}
+
+func (efiCfg *QemuEFIBootConfig) loadDefaults() {
+	// Auto enable EFI if either of the Code/Vars path is set
+	if efiCfg.OVMFCode != "" || efiCfg.OVMFVars != "" {
+		efiCfg.EnableEFI = true
+	}
+
+	if !efiCfg.EnableEFI {
+		return
+	}
+
+	if efiCfg.OVMFCode == "" {
+		efiCfg.OVMFCode = "/usr/share/OVMF/OVMF_CODE.fd"
+	}
+
+	if efiCfg.OVMFVars == "" {
+		efiCfg.OVMFVars = "/usr/share/OVMF/OVMF_VARS.fd"
+	}
+}
+
 type Config struct {
 	common.PackerConfig            `mapstructure:",squash"`
 	commonsteps.HTTPConfig         `mapstructure:",squash"`
@@ -171,6 +215,7 @@ type Config struct {
 	commonsteps.FloppyConfig       `mapstructure:",squash"`
 	commonsteps.CDConfig           `mapstructure:",squash"`
 	QemuSMPConfig                  `mapstructure:",squash"`
+	QemuEFIBootConfig              `mapstructure:",squash"`
 	// Use iso from provided url. Qemu must support
 	// curl block device. This defaults to `false`.
 	ISOSkipCache bool `mapstructure:"iso_skip_cache" required:"false"`
@@ -203,17 +248,21 @@ type Config struct {
 	// Each additional disk uses the same disk parameters as the default disk.
 	// Unset by default.
 	AdditionalDiskSize []string `mapstructure:"disk_additional_size" required:"false"`
-	// The firmware file to be used by QEMU
-	// this option could be set to use EFI instead of BIOS,
-	// by using "OVMF.fd" from OpenFirmware, for example.
+	// The firmware file to be used by QEMU.
 	// If unset, QEMU will load its default firmware.
 	// Also see the QEMU documentation.
+	//
+	// NOTE: when booting in UEFI mode, please use the `efi_` options to
+	// setup the firmware.
 	Firmware string `mapstructure:"firmware" required:"false"`
 	// If a firmware file option was provided, this option can be
 	// used to change how qemu will get it.
 	// If false (the default), then the firmware is provided through
 	// the -bios option, but if true, a pflash drive will be used
 	// instead.
+	//
+	// NOTE: when booting in UEFI mode, please use the `efi_` options to
+	// setup the firmware.
 	PFlash bool `mapstructure:"use_pflash" required:"false"`
 	// The interface to use for the disk. Allowed values include any of `ide`,
 	// `sata`, `scsi`, `virtio` or `virtio-scsi`^\*. Note also that any boot
@@ -288,6 +337,11 @@ type Config struct {
 	// The type of machine emulation to use. Run your qemu binary with the
 	// flags `-machine help` to list available types for your system. This
 	// defaults to `pc`.
+	//
+	// NOTE: when booting a UEFI machine with Secure Boot enabled, this has
+	// to be a q35 derivative.
+	// If the machine is not a q35 derivative, nothing will boot (not even
+	// an EFI shell).
 	MachineType string `mapstructure:"machine_type" required:"false"`
 	// The amount of memory to use when building the VM
 	// in megabytes. This defaults to 512 megabytes.
@@ -645,6 +699,8 @@ func (c *Config) Prepare(raws ...interface{}) ([]string, error) {
 	if c.TPMType == "" {
 		c.TPMType = "tpm-tis"
 	}
+
+	c.QemuEFIBootConfig.loadDefaults()
 
 	errs = packersdk.MultiErrorAppend(errs, c.FloppyConfig.Prepare(&c.ctx)...)
 	errs = packersdk.MultiErrorAppend(errs, c.CDConfig.Prepare(&c.ctx)...)

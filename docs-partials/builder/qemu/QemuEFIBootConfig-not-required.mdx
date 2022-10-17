@@ -1,0 +1,18 @@
+<!-- Code generated from the comments of the QemuEFIBootConfig struct in builder/qemu/config.go; DO NOT EDIT MANUALLY -->
+
+- `efi_boot` (bool) - Boot in EFI mode instead of BIOS. This is required for more modern
+  guest OS. If either or both of `efi_firmware_code` or
+  `efi_firmware_vars` are defined, this will implicitely be set to `true`.
+
+- `efi_firmware_code` (string) - Path to the CODE part of OVMF (or other compatible firmwares)
+  The OVMF_CODE.fd file contains the bootstrap code for booting in EFI
+  mode, and requires a separate VARS.fd file to be able to persist data
+  between boot cycles.
+  
+  Default: /usr/share/OVMF/OVMF_CODE.fd
+
+- `efi_firmware_vars` (string) - Path to the VARS corresponding to the OVMF code file.
+  
+  Default: /usr/share/OVMF/OVMF_VARS.fd
+
+<!-- End of code generated from the comments of the QemuEFIBootConfig struct in builder/qemu/config.go; -->

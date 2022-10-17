@@ -32,17 +32,21 @@
   Each additional disk uses the same disk parameters as the default disk.
   Unset by default.
 
-- `firmware` (string) - The firmware file to be used by QEMU
-  this option could be set to use EFI instead of BIOS,
-  by using "OVMF.fd" from OpenFirmware, for example.
+- `firmware` (string) - The firmware file to be used by QEMU.
   If unset, QEMU will load its default firmware.
   Also see the QEMU documentation.
+  
+  NOTE: when booting in UEFI mode, please use the `efi_` options to
+  setup the firmware.
 
 - `use_pflash` (bool) - If a firmware file option was provided, this option can be
   used to change how qemu will get it.
   If false (the default), then the firmware is provided through
   the -bios option, but if true, a pflash drive will be used
   instead.
+  
+  NOTE: when booting in UEFI mode, please use the `efi_` options to
+  setup the firmware.
 
 - `disk_interface` (string) - The interface to use for the disk. Allowed values include any of `ide`,
   `sata`, `scsi`, `virtio` or `virtio-scsi`^\*. Note also that any boot
@@ -117,6 +121,11 @@
 - `machine_type` (string) - The type of machine emulation to use. Run your qemu binary with the
   flags `-machine help` to list available types for your system. This
   defaults to `pc`.
+  
+  NOTE: when booting a UEFI machine with Secure Boot enabled, this has
+  to be a q35 derivative.
+  If the machine is not a q35 derivative, nothing will boot (not even
+  an EFI shell).
 
 - `memory` (int) - The amount of memory to use when building the VM
   in megabytes. This defaults to 512 megabytes.
