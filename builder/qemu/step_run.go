@@ -283,9 +283,19 @@ func (s *stepRun) getDeviceAndDriveArgs(config *Config, state multistep.StateBag
 			driveArgs = append(driveArgs, fmt.Sprintf("file=%s,if=%s,index=%d,id=cdrom%d,media=cdrom", cdPath, config.CDROMInterface, i, i))
 		}
 	}
+
 	// Firmware
 	if config.Firmware != "" && config.PFlash {
 		driveArgs = append(driveArgs, fmt.Sprintf("file=%s,if=pflash,format=raw,readonly=on", config.Firmware))
+	}
+
+	// EFI
+	if config.QemuEFIBootConfig.EnableEFI {
+		// CODE binary is loaded readonly
+		driveArgs = append(driveArgs, fmt.Sprintf("file=%s,if=pflash,unit=0,format=raw,readonly=on", config.QemuEFIBootConfig.OVMFCode))
+		efivar := state.Get(efivarStateKey)
+		// the local copy of VARS is not
+		driveArgs = append(driveArgs, fmt.Sprintf("file=%s,if=pflash,unit=1,format=raw", efivar.(string)))
 	}
 
 	// TPM

@@ -101,6 +101,9 @@ type FlatConfig struct {
 	SocketCount               *int              `mapstructure:"sockets" required:"false" cty:"sockets" hcl:"sockets"`
 	CoreCount                 *int              `mapstructure:"cores" required:"false" cty:"cores" hcl:"cores"`
 	ThreadCount               *int              `mapstructure:"threads" required:"false" cty:"threads" hcl:"threads"`
+	EnableEFI                 *bool             `mapstructure:"efi_boot" required:"false" cty:"efi_boot" hcl:"efi_boot"`
+	OVMFCode                  *string           `mapstructure:"efi_firmware_code" required:"false" cty:"efi_firmware_code" hcl:"efi_firmware_code"`
+	OVMFVars                  *string           `mapstructure:"efi_firmware_vars" required:"false" cty:"efi_firmware_vars" hcl:"efi_firmware_vars"`
 	ISOSkipCache              *bool             `mapstructure:"iso_skip_cache" required:"false" cty:"iso_skip_cache" hcl:"iso_skip_cache"`
 	Accelerator               *string           `mapstructure:"accelerator" required:"false" cty:"accelerator" hcl:"accelerator"`
 	AdditionalDiskSize        []string          `mapstructure:"disk_additional_size" required:"false" cty:"disk_additional_size" hcl:"disk_additional_size"`
@@ -245,6 +248,9 @@ func (*FlatConfig) HCL2Spec() map[string]hcldec.Spec {
 		"sockets":                      &hcldec.AttrSpec{Name: "sockets", Type: cty.Number, Required: false},
 		"cores":                        &hcldec.AttrSpec{Name: "cores", Type: cty.Number, Required: false},
 		"threads":                      &hcldec.AttrSpec{Name: "threads", Type: cty.Number, Required: false},
+		"efi_boot":                     &hcldec.AttrSpec{Name: "efi_boot", Type: cty.Bool, Required: false},
+		"efi_firmware_code":            &hcldec.AttrSpec{Name: "efi_firmware_code", Type: cty.String, Required: false},
+		"efi_firmware_vars":            &hcldec.AttrSpec{Name: "efi_firmware_vars", Type: cty.String, Required: false},
 		"iso_skip_cache":               &hcldec.AttrSpec{Name: "iso_skip_cache", Type: cty.Bool, Required: false},
 		"accelerator":                  &hcldec.AttrSpec{Name: "accelerator", Type: cty.String, Required: false},
 		"disk_additional_size":         &hcldec.AttrSpec{Name: "disk_additional_size", Type: cty.List(cty.String), Required: false},
