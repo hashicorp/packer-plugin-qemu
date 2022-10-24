@@ -557,6 +557,7 @@ type Config struct {
 	//     ["b<enter><wait5>", "Yes"]
 	//   ]
 	// }
+	// ```
 	BootSteps [][]string `mapstructure:"boot_steps" required:"false"`
 
 	// TODO(mitchellh): deprecate
