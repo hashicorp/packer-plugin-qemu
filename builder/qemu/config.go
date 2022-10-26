@@ -522,14 +522,14 @@ type Config struct {
 	TPMType string `mapstructure:"tpm_device_type" required:"false"`
 	// This is an array of tuples of boot commands, to type when the virtual
 	// machine is booted. The first element of the tuple is the actual boot
-	// command. The second element of the tuple is a description of what the boot
-	// command does. This is intended to be used for interactive installers that
-	// requires many commands to complete the installation. Both the command and
-	// the description will be printed when logging is enabled. When debug mode is
-	// enabled Packer will pause after typing each boot command. This will make it
-	// easier to follow along the installation process and make sure the Packer
-	// and the installer are in sync. It's recommended to use either `boot_steps`
-	// or `boot_commands`.
+	// command. The second element of the tuple, which is optional, is a
+	// description of what the boot command does. This is intended to be used for
+	// interactive installers that requires many commands to complete the
+	// installation. Both the command and the description will be printed when
+	// logging is enabled. When debug mode is enabled Packer will pause after
+	// typing each boot command. This will make it easier to follow along the
+	// installation process and make sure the Packer and the installer are in
+	// sync. `boot_steps` and `boot_commands` are mutually exclusive.
 	//
 	// Example:
 	//
