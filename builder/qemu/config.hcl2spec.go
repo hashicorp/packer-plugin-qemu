@@ -129,6 +129,7 @@ type FlatConfig struct {
 	QMPEnable                 *bool             `mapstructure:"qmp_enable" required:"false" cty:"qmp_enable" hcl:"qmp_enable"`
 	QMPSocketPath             *string           `mapstructure:"qmp_socket_path" required:"false" cty:"qmp_socket_path" hcl:"qmp_socket_path"`
 	UseDefaultDisplay         *bool             `mapstructure:"use_default_display" required:"false" cty:"use_default_display" hcl:"use_default_display"`
+	VGA                       *string           `mapstructure:"vga" required:"false" cty:"vga" hcl:"vga"`
 	Display                   *string           `mapstructure:"display" required:"false" cty:"display" hcl:"display"`
 	VNCBindAddress            *string           `mapstructure:"vnc_bind_address" required:"false" cty:"vnc_bind_address" hcl:"vnc_bind_address"`
 	VNCUsePassword            *bool             `mapstructure:"vnc_use_password" required:"false" cty:"vnc_use_password" hcl:"vnc_use_password"`
@@ -273,6 +274,7 @@ func (*FlatConfig) HCL2Spec() map[string]hcldec.Spec {
 		"qmp_enable":                   &hcldec.AttrSpec{Name: "qmp_enable", Type: cty.Bool, Required: false},
 		"qmp_socket_path":              &hcldec.AttrSpec{Name: "qmp_socket_path", Type: cty.String, Required: false},
 		"use_default_display":          &hcldec.AttrSpec{Name: "use_default_display", Type: cty.Bool, Required: false},
+		"vga":                          &hcldec.AttrSpec{Name: "vga", Type: cty.String, Required: false},
 		"display":                      &hcldec.AttrSpec{Name: "display", Type: cty.String, Required: false},
 		"vnc_bind_address":             &hcldec.AttrSpec{Name: "vnc_bind_address", Type: cty.String, Required: false},
 		"vnc_use_password":             &hcldec.AttrSpec{Name: "vnc_use_password", Type: cty.Bool, Required: false},
