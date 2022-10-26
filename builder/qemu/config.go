@@ -471,6 +471,10 @@ type Config struct {
 	// to qemu, allowing it to choose the default. This may be needed when running
 	// under macOS, and getting errors about sdl not being available.
 	UseDefaultDisplay bool `mapstructure:"use_default_display" required:"false"`
+	// The type of VGA card to emulate. If undefined, this will not be included
+	// in the command-line, and the default qemu value for the emulated machine
+	// will be picked.
+	VGA string `mapstructure:"vga" required:"false"`
 	// What QEMU -display option to use. Defaults to gtk, use none to not pass the
 	// -display option allowing QEMU to choose the default. This may be needed when
 	// running under macOS, and getting errors about sdl not being available.

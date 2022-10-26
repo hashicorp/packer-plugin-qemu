@@ -711,6 +711,18 @@ func Test_Defaults(t *testing.T) {
 			[]string{"-display", "gtk"},
 			"Display option should default to gtk",
 		},
+		{
+			&Config{
+				VGA: "virtio",
+			},
+			map[string]interface{}{},
+			&stepRun{
+				DiskImage: true,
+				ui:        packersdk.TestUi(t),
+			},
+			[]string{"-vga", "virtio"},
+			"VGA should be set to virtio",
+		},
 	}
 
 	for _, tc := range testcases {

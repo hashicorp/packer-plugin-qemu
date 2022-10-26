@@ -179,6 +179,10 @@ func (s *stepRun) getDefaultArgs(config *Config, state multistep.StateBag) map[s
 		defaultArgs["-tpmdev"] = "emulator,id=tpm0,chardev=vtpm"
 	}
 
+	if config.VGA != "" {
+		defaultArgs["-vga"] = config.VGA
+	}
+
 	deviceArgs, driveArgs := s.getDeviceAndDriveArgs(config, state)
 	defaultArgs["-device"] = deviceArgs
 	defaultArgs["-drive"] = driveArgs
