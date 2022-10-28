@@ -520,45 +520,6 @@ type Config struct {
 	//  * ARM: tpm-tis-device
 	//  * PPC (p-series): tpm-spapr
 	TPMType string `mapstructure:"tpm_device_type" required:"false"`
-	// This is an array of tuples of boot commands, to type when the virtual
-	// machine is booted. The first element of the tuple is the actual boot
-	// command. The second element of the tuple, which is optional, is a
-	// description of what the boot command does. This is intended to be used for
-	// interactive installers that requires many commands to complete the
-	// installation. Both the command and the description will be printed when
-	// logging is enabled. When debug mode is enabled Packer will pause after
-	// typing each boot command. This will make it easier to follow along the
-	// installation process and make sure the Packer and the installer are in
-	// sync. `boot_steps` and `boot_commands` are mutually exclusive.
-	//
-	// Example:
-	//
-	// In HCL:
-	// ```hcl
-	// boot_steps = [
-	//   ["1<enter><wait5>", "Install NetBSD"],
-	//   ["a<enter><wait5>", "Installation messages in English"],
-	//   ["a<enter><wait5>", "Keyboard type: unchanged"],
-	//
-	//   ["a<enter><wait5>", "Install NetBSD to hard disk"],
-	//   ["b<enter><wait5>", "Yes"]
-	// ]
-	// ```
-	//
-	// In JSON:
-	// ```json
-	// {
-	//   "boot_steps": [
-	//     ["1<enter><wait5>", "Install NetBSD"],
-	//     ["a<enter><wait5>", "Installation messages in English"],
-	//     ["a<enter><wait5>", "Keyboard type: unchanged"],
-	//
-	//     ["a<enter><wait5>", "Install NetBSD to hard disk"],
-	//     ["b<enter><wait5>", "Yes"]
-	//   ]
-	// }
-	// ```
-	BootSteps [][]string `mapstructure:"boot_steps" required:"false"`
 
 	// TODO(mitchellh): deprecate
 	RunOnce bool `mapstructure:"run_once"`

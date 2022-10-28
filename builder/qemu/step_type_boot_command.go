@@ -35,16 +35,9 @@ type bootCommandTemplateData struct {
 type stepTypeBootCommand struct{}
 
 func (s *stepTypeBootCommand) Run(ctx context.Context, state multistep.StateBag) multistep.StepAction {
-	ui := state.Get("ui").(packersdk.Ui)
 	config := state.Get("config").(*Config)
 	command := config.VNCConfig.FlatBootCommand()
 	bootSteps := config.BootSteps
-
-	if len(command) > 0 && len(bootSteps) > 0 {
-		err := fmt.Errorf("Both boot command and boot steps cannot be used.")
-		ui.Error(err.Error())
-		return multistep.ActionHalt
-	}
 
 	if len(command) > 0 {
 		bootSteps = [][]string{{command}}

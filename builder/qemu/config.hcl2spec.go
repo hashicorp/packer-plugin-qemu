@@ -32,6 +32,7 @@ type FlatConfig struct {
 	BootGroupInterval         *string           `mapstructure:"boot_keygroup_interval" cty:"boot_keygroup_interval" hcl:"boot_keygroup_interval"`
 	BootWait                  *string           `mapstructure:"boot_wait" cty:"boot_wait" hcl:"boot_wait"`
 	BootCommand               []string          `mapstructure:"boot_command" cty:"boot_command" hcl:"boot_command"`
+	BootSteps                 [][]string        `mapstructure:"boot_steps" required:"false" cty:"boot_steps" hcl:"boot_steps"`
 	DisableVNC                *bool             `mapstructure:"disable_vnc" cty:"disable_vnc" hcl:"disable_vnc"`
 	BootKeyInterval           *string           `mapstructure:"boot_key_interval" cty:"boot_key_interval" hcl:"boot_key_interval"`
 	ShutdownCommand           *string           `mapstructure:"shutdown_command" required:"false" cty:"shutdown_command" hcl:"shutdown_command"`
@@ -139,7 +140,6 @@ type FlatConfig struct {
 	VTPM                      *bool             `mapstructure:"vtpm" required:"false" cty:"vtpm" hcl:"vtpm"`
 	VTPMUseTPM1               *bool             `mapstructure:"use_tpm1" required:"false" cty:"use_tpm1" hcl:"use_tpm1"`
 	TPMType                   *string           `mapstructure:"tpm_device_type" required:"false" cty:"tpm_device_type" hcl:"tpm_device_type"`
-	BootSteps                 [][]string        `mapstructure:"boot_steps" required:"false" cty:"boot_steps" hcl:"boot_steps"`
 	RunOnce                   *bool             `mapstructure:"run_once" cty:"run_once" hcl:"run_once"`
 }
 
@@ -177,6 +177,7 @@ func (*FlatConfig) HCL2Spec() map[string]hcldec.Spec {
 		"boot_keygroup_interval":       &hcldec.AttrSpec{Name: "boot_keygroup_interval", Type: cty.String, Required: false},
 		"boot_wait":                    &hcldec.AttrSpec{Name: "boot_wait", Type: cty.String, Required: false},
 		"boot_command":                 &hcldec.AttrSpec{Name: "boot_command", Type: cty.List(cty.String), Required: false},
+		"boot_steps":                   &hcldec.AttrSpec{Name: "boot_steps", Type: cty.List(cty.List(cty.String)), Required: false},
 		"disable_vnc":                  &hcldec.AttrSpec{Name: "disable_vnc", Type: cty.Bool, Required: false},
 		"boot_key_interval":            &hcldec.AttrSpec{Name: "boot_key_interval", Type: cty.String, Required: false},
 		"shutdown_command":             &hcldec.AttrSpec{Name: "shutdown_command", Type: cty.String, Required: false},
@@ -284,7 +285,6 @@ func (*FlatConfig) HCL2Spec() map[string]hcldec.Spec {
 		"vtpm":                         &hcldec.AttrSpec{Name: "vtpm", Type: cty.Bool, Required: false},
 		"use_tpm1":                     &hcldec.AttrSpec{Name: "use_tpm1", Type: cty.Bool, Required: false},
 		"tpm_device_type":              &hcldec.AttrSpec{Name: "tpm_device_type", Type: cty.String, Required: false},
-		"boot_steps":                   &hcldec.AttrSpec{Name: "boot_steps", Type: cty.List(cty.List(cty.String)), Required: false},
 		"run_once":                     &hcldec.AttrSpec{Name: "run_once", Type: cty.Bool, Required: false},
 	}
 	return s
