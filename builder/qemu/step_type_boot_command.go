@@ -36,6 +36,20 @@ type stepTypeBootCommand struct{}
 
 func (s *stepTypeBootCommand) Run(ctx context.Context, state multistep.StateBag) multistep.StepAction {
 	config := state.Get("config").(*Config)
+	command := config.VNCConfig.FlatBootCommand()
+	bootSteps := config.BootSteps
+
+	if len(command) > 0 {
+		bootSteps = [][]string{{command}}
+	}
+
+	return typeBootCommands(ctx, state, bootSteps)
+}
+
+func (*stepTypeBootCommand) Cleanup(multistep.StateBag) {}
+
+func typeBootCommands(ctx context.Context, state multistep.StateBag, bootSteps [][]string) multistep.StepAction {
+	config := state.Get("config").(*Config)
 	debug := state.Get("debug").(bool)
 	httpPort := state.Get("http_port").(int)
 	ui := state.Get("ui").(packersdk.Ui)
@@ -105,35 +119,61 @@ func (s *stepTypeBootCommand) Run(ctx context.Context, state multistep.StateBag)
 
 	d := bootcommand.NewVNCDriver(c, config.VNCConfig.BootKeyInterval)
 
-	ui.Say("Typing the boot command over VNC...")
-	command, err := interpolate.Render(config.VNCConfig.FlatBootCommand(), &configCtx)
-	if err != nil {
-		err := fmt.Errorf("Error preparing boot command: %s", err)
-		state.Put("error", err)
-		ui.Error(err.Error())
-		return multistep.ActionHalt
-	}
+	ui.Say("Typing the boot commands over VNC...")
 
-	seq, err := bootcommand.GenerateExpressionSequence(command)
-	if err != nil {
-		err := fmt.Errorf("Error generating boot command: %s", err)
-		state.Put("error", err)
-		ui.Error(err.Error())
-		return multistep.ActionHalt
-	}
+	for _, step := range bootSteps {
+		if len(step) == 0 {
+			continue
+		}
 
-	if err := seq.Do(ctx, d); err != nil {
-		err := fmt.Errorf("Error running boot command: %s", err)
-		state.Put("error", err)
-		ui.Error(err.Error())
-		return multistep.ActionHalt
-	}
+		var description string
 
-	if pauseFn != nil {
-		pauseFn(multistep.DebugLocationAfterRun, fmt.Sprintf("boot_command: %s", command), state)
+		if len(step) >= 2 {
+			description = step[1]
+		} else {
+			description = ""
+		}
+
+		if len(description) > 0 {
+			ui.Say(fmt.Sprintf("Typing boot command for: %s", description))
+		}
+
+		command, err := interpolate.Render(step[0], &configCtx)
+
+		if err != nil {
+			err := fmt.Errorf("Error preparing boot command: %s", err)
+			state.Put("error", err)
+			ui.Error(err.Error())
+			return multistep.ActionHalt
+		}
+
+		seq, err := bootcommand.GenerateExpressionSequence(command)
+		if err != nil {
+			err := fmt.Errorf("Error generating boot command: %s", err)
+			state.Put("error", err)
+			ui.Error(err.Error())
+			return multistep.ActionHalt
+		}
+
+		if err := seq.Do(ctx, d); err != nil {
+			err := fmt.Errorf("Error running boot command: %s", err)
+			state.Put("error", err)
+			ui.Error(err.Error())
+			return multistep.ActionHalt
+		}
+
+		if pauseFn != nil {
+			var message string
+
+			if len(description) > 0 {
+				message = fmt.Sprintf("boot description: \"%s\", command: %s", description, command)
+			} else {
+				message = fmt.Sprintf("boot_command: %s", command)
+			}
+
+			pauseFn(multistep.DebugLocationAfterRun, message, state)
+		}
 	}
 
 	return multistep.ActionContinue
 }
-
-func (*stepTypeBootCommand) Cleanup(multistep.StateBag) {}
