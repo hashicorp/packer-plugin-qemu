@@ -1,6 +1,6 @@
 module github.com/hashicorp/packer-plugin-qemu
 
-go 1.17
+go 1.18
 
 require (
 	github.com/digitalocean/go-qemu v0.0.0-20210326154740-ac9e0b687001
