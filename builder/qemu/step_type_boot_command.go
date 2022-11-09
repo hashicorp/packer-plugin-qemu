@@ -135,7 +135,7 @@ func typeBootCommands(ctx context.Context, state multistep.StateBag, bootSteps [
 		}
 
 		if len(description) > 0 {
-			log.Printf("Typing boot command for: %s", description)
+			ui.Say(fmt.Sprintf("Typing boot command for: %s", description))
 		}
 
 		command, err := interpolate.Render(step[0], &configCtx)
