@@ -800,7 +800,7 @@ func (c *Config) Prepare(raws ...interface{}) ([]string, error) {
 
 	if len(c.BootCommand) > 0 && len(c.BootSteps) > 0 {
 		errs = packersdk.MultiErrorAppend(errs,
-			fmt.Errorf("Both boot_command and boot_steps cannot be used"))
+			fmt.Errorf("boot_command and boot_steps cannot be used together"))
 	}
 
 	if c.NetBridge != "" || c.VNCUsePassword {
