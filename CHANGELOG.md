@@ -1,3 +1,8 @@
+# Latest Release
+
+Please refer to [releases](https://github.com/hashicorp/packer-plugin-qemu/releases) for the latest CHANGELOG information.
+
+---
 ## 1.0.1 (September 28, 2021)
 
 ### IMPROVEMENTS
