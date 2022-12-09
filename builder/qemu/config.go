@@ -632,6 +632,7 @@ func (c *Config) Prepare(raws ...interface{}) ([]string, error) {
 		InterpolateFilter: &interpolate.RenderFilter{
 			Exclude: []string{
 				"boot_command",
+				"boot_steps",
 				"qemuargs",
 			},
 		},
