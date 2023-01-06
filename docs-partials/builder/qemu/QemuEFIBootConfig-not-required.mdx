@@ -3,6 +3,9 @@
 - `efi_boot` (bool) - Boot in EFI mode instead of BIOS. This is required for more modern
   guest OS. If either or both of `efi_firmware_code` or
   `efi_firmware_vars` are defined, this will implicitely be set to `true`.
+  
+  NOTE: when using a Secure-Boot enabled firmware, the machine type has
+  to be q35, otherwise qemu will not boot.
 
 - `efi_firmware_code` (string) - Path to the CODE part of OVMF (or other compatible firmwares)
   The OVMF_CODE.fd file contains the bootstrap code for booting in EFI
