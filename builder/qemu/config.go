@@ -617,6 +617,21 @@ type Config struct {
 	// }
 	// ```
 	BootSteps [][]string `mapstructure:"boot_steps" required:"false"`
+	// The CPU model is what will be used by qemu for booting the virtual machine
+	// and determine which features of a specific model/family of processors
+	// is supported.
+	//
+	// Any string is supported here, and to see which models are supported
+	// by qemu for a specific architecture, refer to `qemu -cpu help`
+	//
+	// The default value here is that no cpu option will be passed through to qemu,
+	// therefore it will default to whichever CPU model is the default for the
+	// targetted system (on x86_64 for example, it will be qemu64)
+	//
+	// NOTE: RHEL9 removed support for `qemu64` in their distributed qemu package,
+	// forcing users of RHEL9 on x86_64 systems to define this. "host" is a
+	// reasonable value if using an hypervisor.
+	CPUModel string `mapstructure:"cpu_model" required:"false"`
 
 	// TODO(mitchellh): deprecate
 	RunOnce bool `mapstructure:"run_once"`
