@@ -34,8 +34,8 @@ source "qemu" "debian_efi" {
 	]
 	http_directory = "http"
 	boot_wait     = "3s"
+	cpu_model      = "host"
 	qemuargs          = [
-		["-cpu", "host"],
 		["-vga","virtio"] # if vga is not virtio, output is garbled for some reason
 	]
 	vtpm              = true
