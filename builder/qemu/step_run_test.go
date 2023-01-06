@@ -436,6 +436,7 @@ func Test_OptionalConfigOptionsGetSet(t *testing.T) {
 		VMName:         "MyFancyName",
 		MachineType:    "pc",
 		Accelerator:    "hvf",
+		CPUModel:       "host",
 	}
 
 	state := runTestState(t, c)
@@ -452,6 +453,7 @@ func Test_OptionalConfigOptionsGetSet(t *testing.T) {
 		"-display", "gtk",
 		"-m", "0M",
 		"-boot", "once=d",
+		"-cpu", "host",
 		"-fda", "fake_floppy_path",
 		"-name", "MyFancyName",
 		"-netdev", "user,id=user.0,hostfwd=tcp::5000-:0",
