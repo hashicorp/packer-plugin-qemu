@@ -675,9 +675,9 @@ func TestBuilderPrepare_LoadQemuImgArgs(t *testing.T) {
 	var c Config
 	config := testConfig()
 	config["qemu_img_args"] = map[string][]string{
-		"convert": []string{"-o", "preallocation=full"},
-		"resize":  []string{"-foo", "bar"},
-		"create":  []string{"-baz", "bang"},
+		"convert": {"-o", "preallocation=full"},
+		"resize":  {"-foo", "bar"},
+		"create":  {"-baz", "bang"},
 	}
 	warns, err := c.Prepare(config)
 	if len(warns) > 0 {
