@@ -2,3 +2,4 @@ main
 dist/*
 packer-plugin-scaffolding
 example/output-ubuntu1804
+.docs
