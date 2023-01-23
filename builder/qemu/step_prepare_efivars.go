@@ -61,12 +61,17 @@ func (s *stepPrepareEfivars) Cleanup(state multistep.StateBag) {
 		return
 	}
 
-	efiVarFile, ok := state.GetOk(efivarStateKey)
-	// If the path isn't in state, we can assume it's not been created and
-	// therefore we have nothing to cleanup
-	if !ok {
-		return
-	}
+	_, cancelled := state.GetOk(multistep.StateCancelled)
+	_, halted := state.GetOk(multistep.StateHalted)
 
-	os.Remove(efiVarFile.(string))
+	if cancelled || halted {
+		efiVarFile, ok := state.GetOk(efivarStateKey)
+		// If the path isn't in state, we can assume it's not been created and
+		// therefore we have nothing to cleanup
+		if !ok {
+			return
+		}
+
+		os.Remove(efiVarFile.(string))
+	}
 }
