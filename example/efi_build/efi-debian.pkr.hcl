@@ -14,6 +14,7 @@ source "qemu" "debian_efi" {
 	vm_name          = "debian_efi"
 	# headless         = "false" # uncomment to see the boot process in a qemu window
 	machine_type     = "q35" # As of now, q35 is required for secure boot to be enabled
+	# Refer to the boot_steps attribute for more information on usage https://developer.hashicorp.com/packer/plugins/builders/qemu#boot_steps
 	boot_steps     = [
 		["<enter>FS0:<enter>EFI\\boot\\bootx64.efi<enter>", "boot from EFI shell"],
 		["<wait><down><down><enter>", "manual install"],
