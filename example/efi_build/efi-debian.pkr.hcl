@@ -14,23 +14,24 @@ source "qemu" "debian_efi" {
 	vm_name          = "debian_efi"
 	# headless         = "false" # uncomment to see the boot process in a qemu window
 	machine_type     = "q35" # As of now, q35 is required for secure boot to be enabled
-	boot_command     = [
-		"<enter>FS0:<enter>EFI\\boot\\bootx64.efi<enter>", 
-		"<wait><down><down><enter>", # manual install
-		"<wait><down><down><down><down><down><enter>", # automatic install
-		"<wait30>", # wait 30s for preseed prompt
-		"http://{{.HTTPIP}}:{{.HTTPPort}}/preseed.cfg<tab><enter>",
-		"<wait><enter>", # select English as language/locale
-		"<wait><enter>", # select English as language
-		"<wait><enter>", # set English-US as keyboard layout
-		"<wait><wait><wait>root<enter>", # set root password
-		"<wait>root<enter>", # confirm root password
-		"<wait>debian<enter>", # set machine name to debian
-		"<wait><enter>", # set user to debian
-		"<wait>debian<enter>", # set password to debian
-		"<wait>debian<enter>", # confirm password to debian
-		"<wait180>", # wait 3m for system to install
-		"root<enter>root<enter>sed -Ei 's/^#.*PermitRootLogin.*$/PermitRootLogin yes/' /etc/ssh/sshd_config<enter>systemctl restart sshd<enter>exit<enter>" # configure sshd to allow root connection
+	# Refer to the boot_steps attribute for more information on usage https://developer.hashicorp.com/packer/plugins/builders/qemu#boot_steps
+	boot_steps     = [
+		["<enter>FS0:<enter>EFI\\boot\\bootx64.efi<enter>", "boot from EFI shell"],
+		["<wait><down><down><enter>", "manual install"],
+		["<wait><down><down><down><down><down><enter>", "automatic install"],
+		["<wait30>", "wait 30s for preseed prompt"],
+		["http://{{.HTTPIP}}:{{.HTTPPort}}/preseed.cfg<tab><enter>", "select preseed medium"],
+		["<wait><enter>", "select English as language/locale"],
+		["<wait><enter>", "select English as language"],
+		["<wait><enter>", "set English-US as keyboard layout"],
+		["<wait><wait><wait>root<enter>", "set root password"],
+		["<wait>root<enter>", "confirm root password"],
+		["<wait>debian<enter>", "set machine name to debian"],
+		["<wait><enter>", "set user to debian"],
+		["<wait>debian<enter>", "set password to debian"],
+		["<wait>debian<enter>", "confirm password to debian"],
+		["<wait180>", "wait 3m for system to install"],
+		["root<enter>root<enter>sed -Ei 's/^#.*PermitRootLogin.*$/PermitRootLogin yes/' /etc/ssh/sshd_config<enter>systemctl restart sshd<enter>exit<enter>", "configure sshd to allow root connection"],
 	]
 	http_directory = "http"
 	boot_wait     = "3s"
