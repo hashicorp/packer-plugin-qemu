@@ -252,6 +252,14 @@ type Config struct {
 	//
 	// NOTE: HAXM is discontinued, and as of Qemu 8.0, the option is deprecated,
 	// please consider using another accelerator.
+	//
+	// ~> As an alternative to setting `accelerator`, you can set the `machine` and `accel` args
+	// directly using `qemuargs`. For example, to try potential accelerators in order, you could
+	// use the following:
+	// ```hcl
+	// qemuargs = [
+	//   ["-machine", "type=q35,accel=hvf:kvm:whpx:tcg"],
+	// ]
 	Accelerator string `mapstructure:"accelerator" required:"false"`
 	// Additional disks to create. Uses `vm_name` as the disk name template and
 	// appends `-#` where `#` is the position in the array. `#` starts at 1 since 0
