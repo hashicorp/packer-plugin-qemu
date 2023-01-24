@@ -84,7 +84,9 @@ func (s *stepRun) getDefaultArgs(config *Config, state multistep.StateBag) map[s
 		message = "Starting VM, booting disk image"
 	}
 	s.ui.Say(message)
-	defaultArgs["-boot"] = bootDrive
+	if !config.QemuEFIBootConfig.EnableEFI {
+		defaultArgs["-boot"] = bootDrive
+	}
 
 	// configure "-qmp" arguments
 	if config.QMPEnable {

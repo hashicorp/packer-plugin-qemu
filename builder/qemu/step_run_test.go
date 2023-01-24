@@ -142,6 +142,32 @@ func Test_DriveAndDeviceArgs(t *testing.T) {
 		},
 		{
 			&Config{
+				QemuEFIBootConfig: QemuEFIBootConfig{
+					EnableEFI: true,
+					OVMFCode:  "/path/to/fake_efi_code.fd",
+				},
+				OutputDir:     "path_to_output",
+				DiskCache:     "writeback",
+				DiskInterface: "virtio-scsi",
+				DiskImage:     true,
+				Format:        "qcow2",
+			},
+			map[string]interface{}{
+				efivarStateKey: "/path/to/fake_temporary_efi_vars.fd",
+			},
+			&stepRun{
+				DiskImage: true,
+				ui:        packersdk.TestUi(t),
+			},
+			[]string{
+				"-drive", "file=/path/to/fake_efi_code.fd,if=pflash,unit=0,format=raw,readonly=on",
+				"-drive", "file=/path/to/fake_temporary_efi_vars.fd,if=pflash,unit=1,format=raw",
+				"-drive", "file=path_to_output,if=virtio-scsi,cache=writeback,format=qcow2",
+			},
+			"Boot value (-boot) should not be set when using UEFI builds",
+		},
+		{
+			&Config{
 				DiskImage:     true,
 				DiskInterface: "virtio-scsi",
 
