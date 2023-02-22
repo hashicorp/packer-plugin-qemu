@@ -70,6 +70,7 @@ builds:
       - openbsd
       - freebsd
       - windows
+      - illumos
       - solaris
     goarch:
       - amd64
@@ -78,6 +79,10 @@ builds:
     ignore:
       - goos: windows
         goarch: arm
+      - goos: illumos
+        goarch: arm
+      - goos: illumos
+        goarch: '386'
       - goos: solaris
         goarch: arm
       - goos: solaris
