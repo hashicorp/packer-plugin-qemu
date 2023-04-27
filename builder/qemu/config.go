@@ -178,11 +178,11 @@ type QemuEFIBootConfig struct {
 	// mode, and requires a separate VARS.fd file to be able to persist data
 	// between boot cycles.
 	//
-	// Default: /usr/share/OVMF/OVMF_CODE.fd
+	// Default: `/usr/share/OVMF/OVMF_CODE.fd`
 	OVMFCode string `mapstructure:"efi_firmware_code" required:"false"`
 	// Path to the VARS corresponding to the OVMF code file.
 	//
-	// Default: /usr/share/OVMF/OVMF_VARS.fd
+	// Default: `/usr/share/OVMF/OVMF_VARS.fd`
 	OVMFVars string `mapstructure:"efi_firmware_vars" required:"false"`
 }
 
@@ -252,7 +252,8 @@ type Config struct {
 	// If unset, QEMU will load its default firmware.
 	// Also see the QEMU documentation.
 	//
-	// NOTE: when booting in UEFI mode, please use the `efi_` options to
+	// NOTE: when booting in UEFI mode, please use the `efi_` (see
+	// [EFI Boot Configuration](#efi-boot-configuration)) options to
 	// setup the firmware.
 	Firmware string `mapstructure:"firmware" required:"false"`
 	// If a firmware file option was provided, this option can be
@@ -261,7 +262,8 @@ type Config struct {
 	// the -bios option, but if true, a pflash drive will be used
 	// instead.
 	//
-	// NOTE: when booting in UEFI mode, please use the `efi_` options to
+	// NOTE: when booting in UEFI mode, please use the `efi_` (see
+	// [EFI Boot Configuration](#efi-boot-configuration)) options to
 	// setup the firmware.
 	PFlash bool `mapstructure:"use_pflash" required:"false"`
 	// The interface to use for the disk. Allowed values include any of `ide`,
