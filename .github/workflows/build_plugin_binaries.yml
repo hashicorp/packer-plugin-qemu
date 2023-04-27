@@ -147,7 +147,8 @@ jobs:
 
   build_linux_ppc64le:
     defaults:
-      run: working-directory: ~go/src/github.com/hashicorp/packer-plugin-qemu
+      run:
+        working-directory: ~go/src/github.com/hashicorp/packer-plugin-qemu
     runs-on: ubuntu-latest
     container:
       image: docker.mirror.hashicorp.services/cimg/go:1.18
