@@ -3,7 +3,7 @@
 - `cpus` (int) - The number of virtual cpus to use when building the VM.
   
   If undefined, the value will either be `1`, or the product of
-  `sockets * cpus * threads`
+  `sockets * cores * threads`
   
   If this is defined in conjunction with any topology specifier (sockets,
   cores and/or threads), the smallest of the two will be used.
