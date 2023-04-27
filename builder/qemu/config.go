@@ -68,12 +68,12 @@ type QemuImgArgs struct {
 // QemuSMPConfig sets the smp configuration option for the Qemu command-line
 //
 // The smp option sets the number of vCPUs to expose to the VM, the final
-// number of available vCPUs is sockets*cores*threads.
+// number of available vCPUs is `sockets * cores * threads`.
 type QemuSMPConfig struct {
 	// The number of virtual cpus to use when building the VM.
 	//
 	// If undefined, the value will either be `1`, or the product of
-	// `sockets * cpus * threads`
+	// `sockets * cores * threads`
 	//
 	// If this is defined in conjunction with any topology specifier (sockets,
 	// cores and/or threads), the smallest of the two will be used.
