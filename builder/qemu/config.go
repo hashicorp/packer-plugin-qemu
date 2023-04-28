@@ -238,6 +238,9 @@ type Config struct {
 	// ~> For `whpx`, note that [Stefan Weil's QEMU for Windows distribution](https://qemu.weilnetz.de/w64/)
 	// does not include WHPX support and users may need to compile or source a
 	// build of QEMU for Windows themselves with WHPX support.
+	//
+	// NOTE: HAXM is discontinued, and as of Qemu 8.0, the option is deprecated,
+	// please consider using another accelerator.
 	Accelerator string `mapstructure:"accelerator" required:"false"`
 	// Additional disks to create. Uses `vm_name` as the disk name template and
 	// appends `-#` where `#` is the position in the array. `#` starts at 1 since 0
