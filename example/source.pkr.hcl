@@ -1,3 +1,6 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 source "qemu" "example" {
   boot_command      = [
     "<enter><wait><f6><wait><esc><wait>",
