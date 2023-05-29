@@ -187,6 +187,18 @@ type QemuEFIBootConfig struct {
 	//
 	// Default: `/usr/share/OVMF/OVMF_VARS.fd`
 	OVMFVars string `mapstructure:"efi_firmware_vars" required:"false"`
+	// Drop the efivars.fd file in the exported artifact.
+	//
+	// In addition to the disks created by the builder, we also expose the
+	// `efivars.fd` file if the image was booted with UEFI enabled.
+	//
+	// However, if the output is consumed by a post-processor (like AWS,
+	// GCP, etc.), this may not be supported by the code, and since the file
+	// is not a disk image, this will error.
+	// This option can then be used to remove the `efivars.fd` from the
+	// artifact produced by the builder, so it only lists the disks produced
+	// instead.
+	DropEFIVars bool `mapstructure:"efi_drop_efivars" required:"false"`
 }
 
 func (efiCfg *QemuEFIBootConfig) loadDefaults() {

@@ -18,4 +18,16 @@
   
   Default: `/usr/share/OVMF/OVMF_VARS.fd`
 
+- `efi_drop_efivars` (bool) - Drop the efivars.fd file in the exported artifact.
+  
+  In addition to the disks created by the builder, we also expose the
+  `efivars.fd` file if the image was booted with UEFI enabled.
+  
+  However, if the output is consumed by a post-processor (like AWS,
+  GCP, etc.), this may not be supported by the code, and since the file
+  is not a disk image, this will error.
+  This option can then be used to remove the `efivars.fd` from the
+  artifact produced by the builder, so it only lists the disks produced
+  instead.
+
 <!-- End of code generated from the comments of the QemuEFIBootConfig struct in builder/qemu/config.go; -->
