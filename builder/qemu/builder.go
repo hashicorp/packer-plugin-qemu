@@ -189,6 +189,11 @@ func (b *Builder) Run(ctx context.Context, ui packersdk.Ui, hook packersdk.Hook)
 		if err != nil {
 			return err
 		}
+		// Don't keep efivars.fd if explicitely disabled.
+		if b.config.QemuEFIBootConfig.DropEFIVars && filepath.Base(path) == "efivars.fd" {
+			return nil
+		}
+
 		if !info.IsDir() {
 			files = append(files, path)
 		}
