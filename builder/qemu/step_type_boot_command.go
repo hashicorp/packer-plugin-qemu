@@ -28,13 +28,15 @@ type bootCommandTemplateData struct {
 // This step "types" the boot command into the VM over VNC.
 //
 // Uses:
-//   config *config
-//   http_port int
-//   ui     packersdk.Ui
-//   vnc_port int
+//
+//	config *config
+//	http_port int
+//	ui     packersdk.Ui
+//	vnc_port int
 //
 // Produces:
-//   <nothing>
+//
+//	<nothing>
 type stepTypeBootCommand struct{}
 
 func (s *stepTypeBootCommand) Run(ctx context.Context, state multistep.StateBag) multistep.StepAction {

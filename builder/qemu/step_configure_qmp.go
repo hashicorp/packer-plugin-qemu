@@ -18,8 +18,9 @@ import (
 // This step configures the VM to enable the QMP listener.
 //
 // Uses:
-//   config *config
-//   ui     packersdk.Ui
+//
+//	config *config
+//	ui     packersdk.Ui
 //
 // Produces:
 type stepConfigureQMP struct {
