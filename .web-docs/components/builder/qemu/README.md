@@ -15,6 +15,33 @@ necessary to run the virtual machine on KVM.
 Here is a basic example. This example is functional so long as you fixup paths
 to files, URLS for ISOs and checksums.
 
+**HCL2**
+
+```hcl
+source "qemu" "example" {
+  iso_url           = "http://mirror.raystedman.net/centos/6/isos/x86_64/CentOS-6.9-x86_64-minimal.iso"
+  iso_checksum      = "md5:af4a1640c0c6f348c6c41f1ea9e192a2"
+  output_directory  = "output_centos_tdhtest"
+  shutdown_command  = "echo 'packer' | sudo -S shutdown -P now"
+  disk_size         = "5000M"
+  format            = "qcow2"
+  accelerator       = "kvm"
+  http_directory    = "path/to/httpdir"
+  ssh_username      = "root"
+  ssh_password      = "s0m3password"
+  ssh_timeout       = "20m"
+  vm_name           = "tdhtest"
+  net_device        = "virtio-net"
+  disk_interface    = "virtio"
+  boot_wait         = "10s"
+  boot_command      = ["<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/centos6-ks.cfg<enter><wait>"]
+}
+
+build {
+  sources = ["source.qemu.example"]
+}
+```
+
 **JSON**
 
 ```json
@@ -44,34 +71,6 @@ to files, URLS for ISOs and checksums.
   ]
 }
 ```
-
-**HCL2**
-
-```hcl
-source "qemu" "example" {
-  iso_url           = "http://mirror.raystedman.net/centos/6/isos/x86_64/CentOS-6.9-x86_64-minimal.iso"
-  iso_checksum      = "md5:af4a1640c0c6f348c6c41f1ea9e192a2"
-  output_directory  = "output_centos_tdhtest"
-  shutdown_command  = "echo 'packer' | sudo -S shutdown -P now"
-  disk_size         = "5000M"
-  format            = "qcow2"
-  accelerator       = "kvm"
-  http_directory    = "path/to/httpdir"
-  ssh_username      = "root"
-  ssh_password      = "s0m3password"
-  ssh_timeout       = "20m"
-  vm_name           = "tdhtest"
-  net_device        = "virtio-net"
-  disk_interface    = "virtio"
-  boot_wait         = "10s"
-  boot_command      = ["<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/centos6-ks.cfg<enter><wait>"]
-}
-
-build {
-  sources = ["source.qemu.example"]
-}
-```
-
 
 This is an example only, and will time out waiting for SSH because we have not
 provided a kickstart file. You must add a valid kickstart file to the
@@ -284,9 +283,9 @@ necessary for this build to succeed and can be found further down the page.
   
   The following shows a sample usage:
   
-  In JSON:
-  ```json
-    "qemuargs": [
+  In HCL2:
+  ```hcl
+    qemuargs = [
       [ "-m", "1024M" ],
       [ "--no-acpi", "" ],
       [
@@ -299,9 +298,9 @@ necessary for this build to succeed and can be found further down the page.
     ]
   ```
   
-  In HCL2:
-  ```hcl
-    qemuargs = [
+  In JSON:
+  ```json
+    "qemuargs": [
       [ "-m", "1024M" ],
       [ "--no-acpi", "" ],
       [
@@ -338,6 +337,13 @@ necessary for this build to succeed and can be found further down the page.
   You can also use the `SSHHostPort` template variable to produce a packer
   template that can be invoked by `make` in parallel:
   
+  In HCL2:
+  ```hcl
+    qemuargs = [
+      [ "-netdev", "user,hostfwd=tcp::{{ .SSHHostPort }}-:22,id=forward"],
+      [ "-device", "virtio-net,netdev=forward,id=net0"]
+    ]
+  
   In JSON:
   ```json
     "qemuargs": [
@@ -345,13 +351,6 @@ necessary for this build to succeed and can be found further down the page.
       [ "-device", "virtio-net,netdev=forward,id=net0"]
     ]
   ```
-  
-  In HCL2:
-  ```hcl
-    qemuargs = [
-      [ "-netdev", "user,hostfwd=tcp::{{ .SSHHostPort }}-:22,id=forward"],
-      [ "-device", "virtio-net,netdev=forward,id=net0"]
-    ]
   
   `make -j 3 my-awesome-packer-templates` spawns 3 packer processes, each
   of which will bind to their own SSH port as determined by each process.

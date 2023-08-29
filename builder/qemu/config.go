@@ -402,9 +402,9 @@ type Config struct {
 	//
 	// The following shows a sample usage:
 	//
-	// In JSON:
-	// ```json
-	//   "qemuargs": [
+	// In HCL2:
+	// ```hcl
+	//   qemuargs = [
 	//     [ "-m", "1024M" ],
 	//     [ "--no-acpi", "" ],
 	//     [
@@ -417,9 +417,9 @@ type Config struct {
 	//   ]
 	// ```
 	//
-	// In HCL2:
-	// ```hcl
-	//   qemuargs = [
+	// In JSON:
+	// ```json
+	//   "qemuargs": [
 	//     [ "-m", "1024M" ],
 	//     [ "--no-acpi", "" ],
 	//     [
@@ -456,6 +456,13 @@ type Config struct {
 	// You can also use the `SSHHostPort` template variable to produce a packer
 	// template that can be invoked by `make` in parallel:
 	//
+	// In HCL2:
+	// ```hcl
+	//   qemuargs = [
+	//     [ "-netdev", "user,hostfwd=tcp::{{ .SSHHostPort }}-:22,id=forward"],
+	//     [ "-device", "virtio-net,netdev=forward,id=net0"]
+	//   ]
+	//
 	// In JSON:
 	// ```json
 	//   "qemuargs": [
@@ -463,13 +470,6 @@ type Config struct {
 	//     [ "-device", "virtio-net,netdev=forward,id=net0"]
 	//   ]
 	// ```
-	//
-	// In HCL2:
-	// ```hcl
-	//   qemuargs = [
-	//     [ "-netdev", "user,hostfwd=tcp::{{ .SSHHostPort }}-:22,id=forward"],
-	//     [ "-device", "virtio-net,netdev=forward,id=net0"]
-	//   ]
 	//
 	// `make -j 3 my-awesome-packer-templates` spawns 3 packer processes, each
 	// of which will bind to their own SSH port as determined by each process.
