@@ -40,12 +40,10 @@ func (s *stepCreateDisk) Run(ctx context.Context, state multistep.StateBag) mult
 	diskSizes := []string{s.DiskSize}
 
 	// Additional disks
-	if len(s.AdditionalDiskSize) > 0 {
-		for i, diskSize := range s.AdditionalDiskSize {
-			path := filepath.Join(s.OutputDir, fmt.Sprintf("%s-%d", name, i+1))
-			diskFullPaths = append(diskFullPaths, path)
-			diskSizes = append(diskSizes, diskSize)
-		}
+	for i, diskSize := range s.AdditionalDiskSize {
+		path := filepath.Join(s.OutputDir, fmt.Sprintf("%s-%d", name, i+1))
+		diskFullPaths = append(diskFullPaths, path)
+		diskSizes = append(diskSizes, diskSize)
 	}
 
 	// Create all required disks
