@@ -250,10 +250,10 @@ type Config struct {
 	// add [ "-global", "virtio-pci.disable-modern=on" ] to `qemuargs` depending on the
 	// guest operating system.
 	//
-	// NOTE: HAXM is discontinued, and as of Qemu 8.0, the option is deprecated,
+	// ~> HAXM is discontinued, and as of Qemu 8.0, the option is deprecated,
 	// please consider using another accelerator.
 	//
-	// ~> As an alternative to setting `accelerator`, you can set the `machine` and `accel` args
+	// -> As an alternative to setting `accelerator`, you can set the `machine` and `accel` args
 	// directly using `qemuargs`. For example, to try potential accelerators in order, you could
 	// use the following:
 	// ```hcl
