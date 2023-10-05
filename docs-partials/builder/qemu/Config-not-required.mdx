@@ -19,12 +19,16 @@
   add [ "-global", "virtio-pci.disable-modern=on" ] to `qemuargs` depending on the
   guest operating system.
   
-  ~> For `whpx`, note that [Stefan Weil's QEMU for Windows distribution](https://qemu.weilnetz.de/w64/)
-  does not include WHPX support and users may need to compile or source a
-  build of QEMU for Windows themselves with WHPX support.
-  
-  NOTE: HAXM is discontinued, and as of Qemu 8.0, the option is deprecated,
+  ~> HAXM is discontinued, and as of Qemu 8.0, the option is deprecated,
   please consider using another accelerator.
+  
+  -> As an alternative to setting `accelerator`, you can set the `machine` and `accel` args
+  directly using `qemuargs`. For example, to try potential accelerators in order, you could
+  use the following:
+  ```hcl
+  qemuargs = [
+    ["-machine", "type=q35,accel=hvf:kvm:whpx:tcg"],
+  ]
 
 - `disk_additional_size` ([]string) - Additional disks to create. Uses `vm_name` as the disk name template and
   appends `-#` where `#` is the position in the array. `#` starts at 1 since 0
