@@ -347,6 +347,7 @@ necessary for this build to succeed and can be found further down the page.
       [ "-netdev", "user,hostfwd=tcp::{{ .SSHHostPort }}-:22,id=forward"],
       [ "-device", "virtio-net,netdev=forward,id=net0"]
     ]
+  ```
   
   In JSON:
   ```json
