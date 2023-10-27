@@ -478,6 +478,7 @@ type Config struct {
 	//     [ "-netdev", "user,hostfwd=tcp::{{ .SSHHostPort }}-:22,id=forward"],
 	//     [ "-device", "virtio-net,netdev=forward,id=net0"]
 	//   ]
+	// ```
 	//
 	// In JSON:
 	// ```json
