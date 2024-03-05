@@ -20,9 +20,10 @@ import (
 const KeyLeftShift uint32 = 0xFFE1
 
 type bootCommandTemplateData struct {
-	HTTPIP   string
-	HTTPPort int
-	Name     string
+	HTTPIP       string
+	HTTPPort     int
+	Name         string
+	SSHPublicKey string
 }
 
 // This step "types" the boot command into the VM over VNC.
@@ -115,11 +116,13 @@ func typeBootCommands(ctx context.Context, state multistep.StateBag, bootSteps [
 	log.Printf("Connected to VNC desktop: %s", c.DesktopName)
 
 	hostIP := state.Get("http_ip").(string)
+	SSHPublicKey := string(config.CommConfig.Comm.SSHPublicKey)
 	configCtx := config.ctx
 	configCtx.Data = &bootCommandTemplateData{
 		hostIP,
 		httpPort,
 		config.VMName,
+		SSHPublicKey,
 	}
 
 	d := bootcommand.NewVNCDriver(c, config.VNCConfig.BootKeyInterval)
