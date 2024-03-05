@@ -113,6 +113,11 @@ func (b *Builder) Run(ctx context.Context, ui packersdk.Ui, hook packersdk.Hook)
 			CommunicatorType: b.config.CommConfig.Comm.Type,
 			NetBridge:        b.config.NetBridge,
 		},
+		multistep.If(b.config.CommConfig.Comm.Type == "ssh",
+			&communicator.StepSSHKeyGen{
+				CommConf:            &b.config.CommConfig.Comm,
+				SSHTemporaryKeyPair: b.config.CommConfig.Comm.SSHTemporaryKeyPair,
+			}),
 		new(stepConfigureVNC),
 		&stepPrepareEfivars{
 			EFIEnabled: b.config.QemuEFIBootConfig.EnableEFI,
