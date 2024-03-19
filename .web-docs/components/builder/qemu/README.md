@@ -1050,6 +1050,31 @@ boot time.
   of current user.
 
 
+<!-- Code generated from the comments of the SSHTemporaryKeyPair struct in communicator/config.go; DO NOT EDIT MANUALLY -->
+
+- `temporary_key_pair_type` (string) - `dsa` | `ecdsa` | `ed25519` | `rsa` ( the default )
+  
+  Specifies the type of key to create. The possible values are 'dsa',
+  'ecdsa', 'ed25519', or 'rsa'.
+  
+  NOTE: DSA is deprecated and no longer recognized as secure, please
+  consider other alternatives like RSA or ED25519.
+
+- `temporary_key_pair_bits` (int) - Specifies the number of bits in the key to create. For RSA keys, the
+  minimum size is 1024 bits and the default is 4096 bits. Generally, 3072
+  bits is considered sufficient. DSA keys must be exactly 1024 bits as
+  specified by FIPS 186-2. For ECDSA keys, bits determines the key length
+  by selecting from one of three elliptic curve sizes: 256, 384 or 521
+  bits. Attempting to use bit lengths other than these three values for
+  ECDSA keys will fail. Ed25519 keys have a fixed length and bits will be
+  ignored.
+  
+  NOTE: DSA is deprecated and no longer recognized as secure as specified
+  by FIPS 186-5, please consider other alternatives like RSA or ED25519.
+
+<!-- End of code generated from the comments of the SSHTemporaryKeyPair struct in communicator/config.go; -->
+
+
 ### Optional WinRM fields:
 
 <!-- Code generated from the comments of the WinRM struct in communicator/config.go; DO NOT EDIT MANUALLY -->
@@ -1406,6 +1431,80 @@ number of available vCPUs is `sockets * cores * threads`.
 
 <!-- End of code generated from the comments of the Config struct in communicator/config.go; -->
 
+
+### SSH key pair automation
+
+The QEMU builder can inject the current SSH key pair's public key into
+the template using the `SSHPublicKey` template engine. This is the SSH public
+key as a line in OpenSSH authorized_keys format.
+
+When a private key is provided using `ssh_private_key_file`, the key's
+corresponding public key can be accessed using the above engine.
+
+- `ssh_private_key_file` (string) - Path to a PEM encoded private key file to use to authenticate with SSH.
+  The `~` can be used in path and will be expanded to the home directory
+  of current user.
+
+
+If `ssh_password` and `ssh_private_key_file` are not specified, Packer will
+automatically generate en ephemeral key pair. The key pair's public key can
+be accessed using the template engine.
+
+For example, the public key can be provided in the boot command as a URL
+encoded string by appending `| urlquery` to the variable:
+
+In JSON:
+
+```json
+"boot_command": [
+  "<up><wait><tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg PACKER_USER={{ user `username` }} PACKER_AUTHORIZED_KEY={{ .SSHPublicKey | urlquery }}<enter>"
+]
+```
+
+In HCL2:
+
+```hcl
+boot_command = [
+  "<up><wait><tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg PACKER_USER={{ user `username` }} PACKER_AUTHORIZED_KEY={{ .SSHPublicKey | urlquery }}<enter>"
+]
+```
+
+A kickstart could then leverage those fields from the kernel command line by
+decoding the URL-encoded public key:
+
+```shell
+%post
+
+# Newly created users need the file/folder framework for SSH key authentication.
+umask 0077
+mkdir /etc/skel/.ssh
+touch /etc/skel/.ssh/authorized_keys
+
+# Loop over the command line. Set interesting variables.
+for x in $(cat /proc/cmdline)
+do
+  case $x in
+    PACKER_USER=*)
+      PACKER_USER="${x#*=}"
+      ;;
+    PACKER_AUTHORIZED_KEY=*)
+      # URL decode $encoded into $PACKER_AUTHORIZED_KEY
+      encoded=$(echo "${x#*=}" | tr '+' ' ')
+      printf -v PACKER_AUTHORIZED_KEY '%b' "${encoded//%/\\x}"
+      ;;
+  esac
+done
+
+# Create/configure packer user, if any.
+if [ -n "$PACKER_USER" ]
+then
+  useradd $PACKER_USER
+  echo "%$PACKER_USER ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/$PACKER_USER
+  [ -n "$PACKER_AUTHORIZED_KEY" ] && echo $PACKER_AUTHORIZED_KEY >> $(eval echo ~"$PACKER_USER")/.ssh/authorized_keys
+fi
+
+%end
+```
 
 ### Troubleshooting
 
