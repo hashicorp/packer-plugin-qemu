@@ -76,7 +76,7 @@ This is an example only, and will time out waiting for SSH because we have not
 provided a kickstart file. You must add a valid kickstart file to the
 "http_directory" and then provide the file in the "boot_command" in order for
 this build to run. We recommend you check out the
-[Community Templates](/community-tools#templates)
+[Community Templates](https://developer.hashicorp.com/packer/docs/community-tools#templates)
 for a practical usage example.
 
 Note that you will need to set `"headless": true` if you are running Packer
