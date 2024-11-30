@@ -431,6 +431,8 @@ necessary for this build to succeed and can be found further down the page.
   binded to for VNC. By default packer will use 127.0.0.1 for this. If you
   wish to bind to all interfaces use 0.0.0.0.
 
+- `vnc_password` (string) - The password to set when VNCUsePassword == true.
+
 - `vnc_use_password` (bool) - Whether or not to set a password on the VNC server. This option
   automatically enables the QMP socket. See `qmp_socket_path`. Defaults to
   `false`.
