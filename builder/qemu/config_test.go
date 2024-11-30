@@ -15,6 +15,7 @@ import (
 	"github.com/hashicorp/packer-plugin-sdk/common"
 	packersdk "github.com/hashicorp/packer-plugin-sdk/packer"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var testPem = `
@@ -640,6 +641,42 @@ func TestBuilderPrepare_VNCPassword(t *testing.T) {
 	if !reflect.DeepEqual(c.QMPSocketPath, expected) {
 		t.Fatalf("Bad QMP socket Path: %s", c.QMPSocketPath)
 	}
+}
+
+func TestVNCPasswordEmptyWhenUsePasswordFalse(t *testing.T) {
+	var c Config
+	config := testConfig()
+	config["vnc_use_password"] = false
+	config["vnc_password"] = "supersecret"
+	warns, err := c.Prepare(config)
+	require.NoError(t, err)
+	assert.Len(t, warns, 0, "bad: %#v", warns)
+	p := vncpwd{}
+	assert.Empty(t, p.VNCPassword(&c))
+}
+
+func TestVNCPasswordRandomWhenVNCPasswordEmpty(t *testing.T) {
+	var c Config
+	config := testConfig()
+	config["vnc_use_password"] = true
+	config["vnc_password"] = ""
+	warns, err := c.Prepare(config)
+	require.NoError(t, err)
+	assert.Len(t, warns, 0, "bad: %#v", warns)
+	p := vncpwd{}
+	assert.Len(t, p.VNCPassword(&c), 8)
+}
+
+func TestVNCPasswordSetWhenVNCPasswordNotEmpty(t *testing.T) {
+	var c Config
+	config := testConfig()
+	config["vnc_use_password"] = true
+	config["vnc_password"] = "supersecret"
+	warns, err := c.Prepare(config)
+	require.NoError(t, err)
+	assert.Len(t, warns, 0, "bad: %#v", warns)
+	p := vncpwd{}
+	assert.Equal(t, p.VNCPassword(&c), config["vnc_password"])
 }
 
 func TestCommConfigPrepare_BackwardsCompatibility(t *testing.T) {

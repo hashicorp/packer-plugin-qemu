@@ -28,7 +28,15 @@ type stepConfigureVNC struct {
 	l *net.Listener
 }
 
-func VNCPassword() string {
+type vncpwd struct{}
+
+func (p *vncpwd) VNCPassword(c *Config) string {
+	if !c.VNCUsePassword {
+		return ""
+	}
+	if len(c.VNCPassword) != 0 {
+		return c.VNCPassword
+	}
 	length := int(8)
 
 	charSet := []byte("012345689abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -39,7 +47,6 @@ func VNCPassword() string {
 	for i := 0; i < length; i++ {
 		password[i] = charSet[rand.Intn(charSetLength)]
 	}
-
 	return string(password)
 }
 
@@ -54,7 +61,6 @@ func (s *stepConfigureVNC) Run(ctx context.Context, state multistep.StateBag) mu
 	ui.Say(msg)
 	log.Print(msg)
 
-	var vncPassword string
 	var err error
 	s.l, err = net.ListenRangeConfig{
 		Addr:    config.VNCBindAddress,
@@ -70,16 +76,11 @@ func (s *stepConfigureVNC) Run(ctx context.Context, state multistep.StateBag) mu
 	}
 	s.l.Listener.Close() // free port, but don't unlock lock file
 	vncPort := s.l.Port
-
-	if config.VNCUsePassword {
-		vncPassword = VNCPassword()
-	} else {
-		vncPassword = ""
-	}
+	vncPassword := vncpwd{}
 
 	log.Printf("Found available VNC port: %d on IP: %s", vncPort, config.VNCBindAddress)
 	state.Put("vnc_port", vncPort)
-	state.Put("vnc_password", vncPassword)
+	state.Put("vnc_password", vncPassword.VNCPassword(config))
 
 	return multistep.ActionContinue
 }

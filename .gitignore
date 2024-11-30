@@ -3,3 +3,4 @@ dist/*
 packer-plugin-scaffolding
 example/output-ubuntu1804
 crash.log
+packer-plugin-qemu
