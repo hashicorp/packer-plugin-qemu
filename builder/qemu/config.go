@@ -562,6 +562,8 @@ type Config struct {
 	// binded to for VNC. By default packer will use 127.0.0.1 for this. If you
 	// wish to bind to all interfaces use 0.0.0.0.
 	VNCBindAddress string `mapstructure:"vnc_bind_address" required:"false"`
+	// The password to set when VNCUsePassword == true.
+	VNCPassword string `mapstructure:"vnc_password" required:"false"`
 	// Whether or not to set a password on the VNC server. This option
 	// automatically enables the QMP socket. See `qmp_socket_path`. Defaults to
 	// `false`.
