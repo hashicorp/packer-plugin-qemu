@@ -95,7 +95,7 @@ func (d *QemuDriver) Copy(sourceName, targetName string) error {
 		err = fmt.Errorf("Error copying iso to output dir: %s", err)
 		return err
 	}
-	log.Printf(fmt.Sprintf("Copied %d bytes", bytes))
+	log.Printf("Copied %d bytes", bytes)
 
 	return nil
 }
