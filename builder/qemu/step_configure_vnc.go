@@ -28,9 +28,7 @@ type stepConfigureVNC struct {
 	l *net.Listener
 }
 
-type vncpwd struct{}
-
-func (p *vncpwd) VNCPassword(c *Config) (string, error) {
+func VNCPassword(c *Config) (string, error) {
 	if !c.VNCUsePassword {
 		return "", nil
 	}
@@ -85,8 +83,7 @@ func (s *stepConfigureVNC) Run(ctx context.Context, state multistep.StateBag) mu
 	s.l.Listener.Close() // free port, but don't unlock lock file
 	vncPort := s.l.Port
 
-	vncPwd := vncpwd{}
-	vncPassword, err = vncPwd.VNCPassword(config)
+	vncPassword, err = VNCPassword(config)
 	if err != nil {
 		err := fmt.Errorf("Error finding VNC password: %s", err)
 		state.Put("error", err)
