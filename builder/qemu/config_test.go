@@ -724,8 +724,7 @@ func TestVNCPasswordEmptyWhenUsePasswordFalse(t *testing.T) {
 	warns, err := c.Prepare(config)
 	require.NoError(t, err)
 	assert.Len(t, warns, 0, "bad: %#v", warns)
-	p := vncpwd{}
-	pass, _ := p.VNCPassword(&c)
+	pass, _ := VNCPassword(&c)
 	assert.Empty(t, pass)
 }
 
@@ -737,8 +736,7 @@ func TestVNCPasswordRandomWhenVNCPasswordEmpty(t *testing.T) {
 	warns, err := c.Prepare(config)
 	require.NoError(t, err)
 	assert.Len(t, warns, 0, "bad: %#v", warns)
-	p := vncpwd{}
-	pass, _ := p.VNCPassword(&c)
+	pass, _ := VNCPassword(&c)
 	assert.Len(t, pass, 8)
 }
 
@@ -750,8 +748,7 @@ func TestVNCPasswordSetWhenVNCPasswordNotEmpty(t *testing.T) {
 	warns, err := c.Prepare(config)
 	require.NoError(t, err)
 	assert.Len(t, warns, 0, "bad: %#v", warns)
-	p := vncpwd{}
-	pass, _ := p.VNCPassword(&c)
+	pass, _ := VNCPassword(&c)
 	assert.Equal(t, pass, config["vnc_password"])
 }
 
@@ -763,7 +760,6 @@ func TestVNCPasswordErrorWhenPasswordLenMoreThan8(t *testing.T) {
 	warns, err := c.Prepare(config)
 	require.NoError(t, err)
 	assert.Len(t, warns, 0, "bad: %#v", warns)
-	p := vncpwd{}
-	_, err = p.VNCPassword(&c)
+	_, err = VNCPassword(&c)
 	assert.Error(t, err)
 }
