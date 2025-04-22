@@ -5,6 +5,7 @@ package qemu
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -713,4 +714,56 @@ func TestBuilderPrepare_cd_content(t *testing.T) {
 	if len(c.CDContent) == 0 {
 		t.Fatal("cd_content empty")
 	}
+}
+
+func TestVNCPasswordEmptyWhenUsePasswordFalse(t *testing.T) {
+	var c Config
+	config := testConfig()
+	config["vnc_use_password"] = false
+	config["vnc_password"] = "supersecret"
+	warns, err := c.Prepare(config)
+	require.NoError(t, err)
+	assert.Len(t, warns, 0, "bad: %#v", warns)
+	p := vncpwd{}
+	pass, _ := p.VNCPassword(&c)
+	assert.Empty(t, pass)
+}
+
+func TestVNCPasswordRandomWhenVNCPasswordEmpty(t *testing.T) {
+	var c Config
+	config := testConfig()
+	config["vnc_use_password"] = true
+	config["vnc_password"] = ""
+	warns, err := c.Prepare(config)
+	require.NoError(t, err)
+	assert.Len(t, warns, 0, "bad: %#v", warns)
+	p := vncpwd{}
+	pass, _ := p.VNCPassword(&c)
+	assert.Len(t, pass, 8)
+}
+
+func TestVNCPasswordSetWhenVNCPasswordNotEmpty(t *testing.T) {
+	var c Config
+	config := testConfig()
+	config["vnc_use_password"] = true
+	config["vnc_password"] = "secret"
+	warns, err := c.Prepare(config)
+	require.NoError(t, err)
+	assert.Len(t, warns, 0, "bad: %#v", warns)
+	p := vncpwd{}
+	pass, _ := p.VNCPassword(&c)
+	assert.Equal(t, pass, config["vnc_password"])
+}
+
+func TestVNCPasswordErrorWhenPasswordLenMoreThan8(t *testing.T) {
+	var c Config
+	config := testConfig()
+	config["vnc_use_password"] = true
+	config["vnc_password"] = "secretpassword"
+	warns, err := c.Prepare(config)
+	require.NoError(t, err)
+	assert.Len(t, warns, 0, "bad: %#v", warns)
+	p := vncpwd{}
+	_, err = p.VNCPassword(&c)
+	assert.Error(t, err)
 }

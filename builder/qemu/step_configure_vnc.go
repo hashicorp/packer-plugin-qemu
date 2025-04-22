@@ -5,6 +5,7 @@ package qemu
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"math/rand"
@@ -28,7 +29,21 @@ type stepConfigureVNC struct {
 	l *net.Listener
 }
 
-func VNCPassword() string {
+type vncpwd struct{}
+
+func (p *vncpwd) VNCPassword(c *Config) (string, error) {
+	if !c.VNCUsePassword {
+		return "", nil
+	}
+
+	if len(c.VNCPassword) > 8 {
+		return "", errors.New("password too long")
+	}
+
+	if len(c.VNCPassword) != 0 {
+		return c.VNCPassword, nil
+	}
+
 	length := int(8)
 
 	charSet := []byte("012345689abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -40,7 +55,7 @@ func VNCPassword() string {
 		password[i] = charSet[rand.Intn(charSetLength)]
 	}
 
-	return string(password)
+	return string(password), nil
 }
 
 func (s *stepConfigureVNC) Run(ctx context.Context, state multistep.StateBag) multistep.StepAction {
@@ -71,10 +86,13 @@ func (s *stepConfigureVNC) Run(ctx context.Context, state multistep.StateBag) mu
 	s.l.Listener.Close() // free port, but don't unlock lock file
 	vncPort := s.l.Port
 
-	if config.VNCUsePassword {
-		vncPassword = VNCPassword()
-	} else {
-		vncPassword = ""
+	vncPwd := vncpwd{}
+	vncPassword, err = vncPwd.VNCPassword(config)
+	if err != nil {
+		err := fmt.Errorf("Error finding VNC password: %s", err)
+		state.Put("error", err)
+		ui.Error(err.Error())
+		return multistep.ActionHalt
 	}
 
 	log.Printf("Found available VNC port: %d on IP: %s", vncPort, config.VNCBindAddress)

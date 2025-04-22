@@ -566,6 +566,8 @@ type Config struct {
 	// automatically enables the QMP socket. See `qmp_socket_path`. Defaults to
 	// `false`.
 	VNCUsePassword bool `mapstructure:"vnc_use_password" required:"false"`
+	// The password to set when VNCUsePassword == true.
+	VNCPassword string `mapstructure:"vnc_password" required:"false"`
 	// The minimum and maximum port
 	// to use for VNC access to the virtual machine. The builder uses VNC to type
 	// the initial boot_command. Because Packer generally runs in parallel,
