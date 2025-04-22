@@ -435,6 +435,8 @@ necessary for this build to succeed and can be found further down the page.
   automatically enables the QMP socket. See `qmp_socket_path`. Defaults to
   `false`.
 
+- `vnc_password` (string) - The password to set when VNCUsePassword == true.
+
 - `vnc_port_min` (int) - The minimum and maximum port
   to use for VNC access to the virtual machine. The builder uses VNC to type
   the initial boot_command. Because Packer generally runs in parallel,
