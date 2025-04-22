@@ -37,7 +37,7 @@ func (p *vncpwd) VNCPassword(c *Config) (string, error) {
 	}
 
 	if len(c.VNCPassword) > 8 {
-		return "", errors.New("password too long")
+		return "", errors.New(fmt.Sprintf("password length is longer than expected %d > %d", len(c.VNCPassword), 8))
 	}
 
 	if len(c.VNCPassword) != 0 {
