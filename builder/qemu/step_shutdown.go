@@ -38,7 +38,25 @@ func (s *stepShutdown) Run(ctx context.Context, state multistep.StateBag) multis
 	driver := state.Get("driver").(Driver)
 	ui := state.Get("ui").(packersdk.Ui)
 
-	if s.ShutdownCommand != "" && s.Comm.Type != "none" {
+	if s.Comm.Type == "none" {
+		cancelCh := make(chan struct{}, 1)
+		go func() {
+			defer close(cancelCh)
+			<-time.After(s.ShutdownTimeout)
+		}()
+		ui.Say("Waiting for shutdown...")
+		if ok := driver.WaitForShutdown(cancelCh); ok {
+			log.Println("VM shut down.")
+			return multistep.ActionContinue
+		} else {
+			err := fmt.Errorf("Failed to shutdown")
+			state.Put("error", err)
+			ui.Error(err.Error())
+			return multistep.ActionHalt
+		}
+	}
+
+	if s.ShutdownCommand != "" {
 		comm := state.Get("communicator").(packersdk.Communicator)
 		ui.Say("Gracefully halting virtual machine...")
 		log.Printf("Executing shutdown command: %s", s.ShutdownCommand)
