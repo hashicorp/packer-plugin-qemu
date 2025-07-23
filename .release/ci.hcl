@@ -3,7 +3,7 @@
 
 schema = "1"
 
-project "packer-package-qemu" {
+project "packer-plugin-qemu" {
   team = "#proj-packer-releases"
   slack {
     notification_channel = "C032TD9KCMQ"
