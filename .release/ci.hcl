@@ -1,7 +1,7 @@
 # Copyright (c) HashiCorp, Inc.
 # SPDX-License-Identifier: MPL-2.0
 
-schema = "1"
+schema = "2"
 
 project "packer-plugin-qemu" {
   team = "#proj-packer-releases"
