@@ -1,4 +1,4 @@
-## 1.14.0 (Upcoming...)
+## 1.14.0 (July 31, 2025)
 
 ### IMPROVEMENTS:
 
