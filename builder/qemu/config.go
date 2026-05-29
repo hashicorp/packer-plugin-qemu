@@ -39,6 +39,7 @@ var diskInterface = map[string]bool{
 	"ide":         true,
 	"sata":        true,
 	"scsi":        true,
+	"sd":          true,
 	"virtio":      true,
 	"virtio-scsi": true,
 }
@@ -289,7 +290,7 @@ type Config struct {
 	// setup the firmware.
 	PFlash bool `mapstructure:"use_pflash" required:"false"`
 	// The interface to use for the disk. Allowed values include any of `ide`,
-	// `sata`, `scsi`, `virtio` or `virtio-scsi`^\*. Note also that any boot
+	// `sata`, `scsi`, `sd`, `virtio` or `virtio-scsi`^\*. Note also that any boot
 	// commands or kickstart type scripts must have proper adjustments for
 	// resulting device names. The Qemu builder uses `virtio` by default.
 	//

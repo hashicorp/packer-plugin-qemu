@@ -158,7 +158,7 @@ necessary for this build to succeed and can be found further down the page.
   setup the firmware.
 
 - `disk_interface` (string) - The interface to use for the disk. Allowed values include any of `ide`,
-  `sata`, `scsi`, `virtio` or `virtio-scsi`^\*. Note also that any boot
+  `sata`, `scsi`, `sd`, `virtio` or `virtio-scsi`^\*. Note also that any boot
   commands or kickstart type scripts must have proper adjustments for
   resulting device names. The Qemu builder uses `virtio` by default.
   
