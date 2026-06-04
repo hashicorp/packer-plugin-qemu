@@ -1114,7 +1114,7 @@ boot time.
 
 - `winrm_insecure` (bool) - If `true`, do not check server certificate chain and host name.
 
-- `winrm_use_ntlm` (bool) - If `true`, NTLMv2 authentication (with session security) will be used
+- `winrm_use_ntlm` (boolean) - If `true`, NTLMv2 authentication (with session security) will be used
   for WinRM, rather than default (basic authentication), removing the
   requirement for basic authentication to be enabled within the target
   guest. Further reading for remote connection authentication can be found
@@ -1182,7 +1182,11 @@ command, they will be replaced by the proper key:
 
 -   `<leftShift> <rightShift>` - Simulates pressing the shift key.
 
--   `<leftSuper> <rightSuper>` - Simulates pressing the ⌘ or Windows key.
+-   `<leftSuper> <rightSuper>` - Simulates pressing the super key.
+
+-   `<leftCommand> <rightCommand>` - Simulates pressing the ⌘ key.
+
+-   `<leftOption> <rightOption>` - Simulates pressing the ⌥ key.
 
   - `<wait> <wait5> <wait10>` - Adds a 1, 5 or 10 second pause before
     sending any additional keys. This is useful if you have to generally
