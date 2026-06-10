@@ -31,7 +31,17 @@ func (s *stepPrepareEfivars) Run(ctx context.Context, state multistep.StateBag) 
 		return multistep.ActionContinue
 	}
 
-	dstPath := filepath.Join(s.OutputDir, "efivars.fd")
+	// Check whether EFI vars file is raw or qcow2 to determine
+	// which file extension to use when copying it locally
+	varsQCOW2, err := isQCOW2(s.SourcePath)
+	if err != nil {
+	}
+	varsFileExt := "fd"
+	if varsQCOW2 {
+		varsFileExt = "qcow2"
+	}
+
+	dstPath := fmt.Sprintf(filepath.Join(s.OutputDir, "efivars.%s"), varsFileExt)
 	outFile, err := os.OpenFile(dstPath, os.O_CREATE|os.O_WRONLY, 0660)
 	if err != nil {
 		errMsg := fmt.Sprintf("failed to create local efivars file at %s: %s", dstPath, err)
