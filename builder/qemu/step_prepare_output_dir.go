@@ -1,4 +1,4 @@
-// Copyright (c) HashiCorp, Inc.
+// Copyright IBM Corp. 2013, 2025
 // SPDX-License-Identifier: MPL-2.0
 
 package qemu
@@ -21,7 +21,11 @@ func (stepPrepareOutputDir) Run(ctx context.Context, state multistep.StateBag) m
 
 	if _, err := os.Stat(config.OutputDir); err == nil && config.PackerForce {
 		ui.Say("Deleting previous output directory...")
-		os.RemoveAll(config.OutputDir)
+		if err := os.RemoveAll(config.OutputDir); err != nil {
+			state.Put("error", err)
+			ui.Error(err.Error())
+			return multistep.ActionHalt
+		}
 	}
 
 	if err := os.MkdirAll(config.OutputDir, 0755); err != nil {

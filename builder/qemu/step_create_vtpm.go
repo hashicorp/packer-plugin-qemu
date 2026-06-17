@@ -1,4 +1,4 @@
-// Copyright (c) HashiCorp, Inc.
+// Copyright IBM Corp. 2013, 2025
 // SPDX-License-Identifier: MPL-2.0
 
 package qemu
@@ -108,5 +108,7 @@ func (s *stepCreatevTPM) Cleanup(state multistep.StateBag) {
 	}
 
 	tmpDir := state.Get(swtpmTmpDir).(string)
-	os.RemoveAll(tmpDir)
+	if err := os.RemoveAll(tmpDir); err != nil {
+		log.Printf("failed to cleanup swtpm temporary directory %q: %s", tmpDir, err)
+	}
 }

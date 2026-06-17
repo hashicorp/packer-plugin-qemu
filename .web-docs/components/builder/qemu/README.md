@@ -158,7 +158,7 @@ necessary for this build to succeed and can be found further down the page.
   setup the firmware.
 
 - `disk_interface` (string) - The interface to use for the disk. Allowed values include any of `ide`,
-  `sata`, `scsi`, `virtio` or `virtio-scsi`^\*. Note also that any boot
+  `sata`, `scsi`, `sd`, `virtio` or `virtio-scsi`^\*. Note also that any boot
   commands or kickstart type scripts must have proper adjustments for
   resulting device names. The Qemu builder uses `virtio` by default.
   
@@ -1043,9 +1043,13 @@ boot time.
   useful if, for example, packer hangs on a connection after a reboot.
   Example: `5m`. Disabled by default.
 
-- `ssh_remote_tunnels` ([]string) - 
+- `ssh_remote_tunnels` ([]string) - Remote tunnels forward a port from your local machine to the instance.
+  Format: ["REMOTE_PORT:LOCAL_HOST:LOCAL_PORT"]
+  Example: "9090:localhost:80" forwards localhost:9090 on your machine to port 80 on the instance.
 
-- `ssh_local_tunnels` ([]string) - 
+- `ssh_local_tunnels` ([]string) - Local tunnels forward a port from the instance to your local machine.
+  Format: ["LOCAL_PORT:REMOTE_HOST:REMOTE_PORT"]
+  Example: "8080:localhost:3000" allows the instance to access your local machine’s port 3000 via localhost:8080.
 
 <!-- End of code generated from the comments of the SSH struct in communicator/config.go; -->
 
@@ -1110,7 +1114,7 @@ boot time.
 
 - `winrm_insecure` (bool) - If `true`, do not check server certificate chain and host name.
 
-- `winrm_use_ntlm` (bool) - If `true`, NTLMv2 authentication (with session security) will be used
+- `winrm_use_ntlm` (boolean) - If `true`, NTLMv2 authentication (with session security) will be used
   for WinRM, rather than default (basic authentication), removing the
   requirement for basic authentication to be enabled within the target
   guest. Further reading for remote connection authentication can be found
@@ -1178,7 +1182,11 @@ command, they will be replaced by the proper key:
 
 -   `<leftShift> <rightShift>` - Simulates pressing the shift key.
 
--   `<leftSuper> <rightSuper>` - Simulates pressing the ⌘ or Windows key.
+-   `<leftSuper> <rightSuper>` - Simulates pressing the super key.
+
+-   `<leftCommand> <rightCommand>` - Simulates pressing the ⌘ key.
+
+-   `<leftOption> <rightOption>` - Simulates pressing the ⌥ key.
 
   - `<wait> <wait5> <wait10>` - Adds a 1, 5 or 10 second pause before
     sending any additional keys. This is useful if you have to generally

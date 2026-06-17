@@ -1,4 +1,16 @@
-## 1.14.0 (July 31, 2025)
+## 1.1.5 (June 17, 2026)
+
+### IMPROVEMENTS
+
+* Add support for `sd` in the `disk_interface` configuration option. [GH-239]
+* Update `github.com/hashicorp/packer-plugin-sdk` from 0.6.1 to 0.6.9. [GH-224] [GH-237]
+* Update dependencies in `go.mod`/`go.sum` including `github.com/ulikunitz/xz`. [GH-240]
+
+### BUG FIXES
+
+* Fix authorization bypass logic and related validation workflow behavior. [GH-232] [GH-233]
+
+## 1.1.4 (July 31, 2025)
 
 ### IMPROVEMENTS:
 
