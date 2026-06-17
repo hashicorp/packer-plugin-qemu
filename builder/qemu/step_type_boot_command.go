@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"strconv"
 	"time"
 
 	"github.com/hashicorp/packer-plugin-sdk/bootcommand"
@@ -87,7 +88,7 @@ func typeBootCommands(ctx context.Context, state multistep.StateBag, bootSteps [
 	// Connect to VNC
 	ui.Say(fmt.Sprintf("Connecting to VM via VNC (%s:%d)", vncIP, vncPort))
 
-	nc, err := net.Dial("tcp", fmt.Sprintf("%s:%d", vncIP, vncPort))
+	nc, err := net.Dial("tcp", net.JoinHostPort(vncIP, strconv.Itoa(vncPort)))
 	if err != nil {
 		err := fmt.Errorf("Error connecting to VNC: %s", err)
 		state.Put("error", err)

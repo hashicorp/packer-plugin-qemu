@@ -108,5 +108,7 @@ func (s *stepCreatevTPM) Cleanup(state multistep.StateBag) {
 	}
 
 	tmpDir := state.Get(swtpmTmpDir).(string)
-	os.RemoveAll(tmpDir)
+	if err := os.RemoveAll(tmpDir); err != nil {
+		log.Printf("failed to cleanup swtpm temporary directory %q: %s", tmpDir, err)
+	}
 }

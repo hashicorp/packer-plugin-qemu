@@ -75,6 +75,9 @@ func (s *stepPrepareEfivars) Cleanup(state multistep.StateBag) {
 			return
 		}
 
-		os.Remove(efiVarFile.(string))
+		efiPath := efiVarFile.(string)
+		if err := os.Remove(efiPath); err != nil && !os.IsNotExist(err) {
+			state.Get("ui").(packersdk.Ui).Error(fmt.Sprintf("failed to cleanup efivars file at %s: %s", efiPath, err))
+		}
 	}
 }
