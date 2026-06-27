@@ -119,6 +119,35 @@ func Test_UserOverrides(t *testing.T) {
 
 }
 
+func Test_ISOAndCDPathOverrides(t *testing.T) {
+	config := &Config{
+		VMName: "myvm",
+		QemuArgs: [][]string{
+			{"-isoflag", "file={{.ISOPath}},media=cdrom"},
+			{"-cdflag", "file={{.CDPath}},media=cdrom"},
+		},
+	}
+
+	state := runTestState(t, config)
+	state.Put("cd_path", "/path/to/cd_files.iso")
+
+	step := &stepRun{
+		atLeastVersion2: true,
+		ui:              packersdk.TestUi(t),
+	}
+	args, err := step.getCommandArgs(config, state)
+	if err != nil {
+		t.Fatalf("should not have an error getting args. Error: %s", err)
+	}
+
+	assert.True(t,
+		matchArgument(args, []string{"-isoflag", "file=/path/to/test.iso,media=cdrom"}),
+		fmt.Sprintf("{{.ISOPath}} should interpolate to the resolved ISO path. Received: %#v", args))
+	assert.True(t,
+		matchArgument(args, []string{"-cdflag", "file=/path/to/cd_files.iso,media=cdrom"}),
+		fmt.Sprintf("{{.CDPath}} should interpolate to the cd_files ISO path. Received: %#v", args))
+}
+
 func Test_DriveAndDeviceArgs(t *testing.T) {
 	type testCase struct {
 		Config     *Config
