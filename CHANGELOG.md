@@ -1,3 +1,14 @@
+## 1.1.6 (July 16, 2026)
+
+### IMPROVEMENTS
+
+* Update `github.com/hashicorp/packer-plugin-sdk` from 0.6.9 to 0.6.10. [GH-248]
+* Update dependencies in `go.mod`/`go.sum` including `golang.org/x/crypto` to 0.54.0.
+
+### BUG FIXES
+
+* Add suppression for `GO-2026-5932` after verification it only affects the unmaintained `openpgp` subpackage that is not imported by this plugin.
+
 ## 1.1.5 (June 17, 2026)
 
 ### IMPROVEMENTS
