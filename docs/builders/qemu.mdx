@@ -26,7 +26,8 @@ necessary to run the virtual machine on KVM.
 Here is a basic example. This example is functional so long as you fixup paths
 to files, URLS for ISOs and checksums.
 
-**HCL2**
+<Tabs>
+<Tab heading="HCL2">
 
 ```hcl
 source "qemu" "example" {
@@ -53,7 +54,8 @@ build {
 }
 ```
 
-**JSON**
+</Tab>
+<Tab heading="JSON">
 
 ```json
 {
@@ -83,6 +85,9 @@ build {
 }
 ```
 
+</Tab>
+</Tabs>
+
 This is an example only, and will time out waiting for SSH because we have not
 provided a kickstart file. You must add a valid kickstart file to the
 "http_directory" and then provide the file in the "boot_command" in order for
@@ -107,7 +112,7 @@ references for [ISO](#iso-configuration),
 configuration references, which are
 necessary for this build to succeed and can be found further down the page.
 
-### Optional:
+<b>Optional fields:</b>
 
 @include 'builder/qemu/Config-not-required.mdx'
 
@@ -115,11 +120,11 @@ necessary for this build to succeed and can be found further down the page.
 
 @include 'packer-plugin-sdk/multistep/commonsteps/ISOConfig.mdx'
 
-### Required:
+<b>Required fields:</b>
 
 @include 'packer-plugin-sdk/multistep/commonsteps/ISOConfig-required.mdx'
 
-### Optional:
+<b>Optional fields:</b>
 
 @include 'packer-plugin-sdk/multistep/commonsteps/ISOConfig-not-required.mdx'
 
@@ -127,7 +132,7 @@ necessary for this build to succeed and can be found further down the page.
 
 @include 'packer-plugin-sdk/multistep/commonsteps/HTTPConfig.mdx'
 
-### Optional:
+<b>Optional fields:</b>
 
 @include 'packer-plugin-sdk/multistep/commonsteps/HTTPConfig-not-required.mdx'
 
@@ -135,33 +140,33 @@ necessary for this build to succeed and can be found further down the page.
 
 @include 'packer-plugin-sdk/multistep/commonsteps/FloppyConfig.mdx'
 
-### Optional:
+<b>Optional fields:</b>
 
 @include 'packer-plugin-sdk/multistep/commonsteps/FloppyConfig-not-required.mdx'
 
-### CD configuration
+## CD configuration
 
 @include 'packer-plugin-sdk/multistep/commonsteps/CDConfig.mdx'
 
-#### Optional:
+<b>Optional fields:</b>
 
 @include 'packer-plugin-sdk/multistep/commonsteps/CDConfig-not-required.mdx'
 
 ## Shutdown configuration
 
-### Optional:
+<b>Optional fields:</b>
 
 @include 'packer-plugin-sdk/shutdowncommand/ShutdownConfig-not-required.mdx'
 
 ## Communicator configuration
 
-### Optional common fields:
+<b>Optional fields:</b>
 
 @include 'packer-plugin-sdk/communicator/Config-not-required.mdx'
 
 @include 'builder/qemu/CommConfig-not-required.mdx'
 
-### Optional SSH fields:
+### SSH Communicator fields:
 
 @include 'packer-plugin-sdk/communicator/SSH-not-required.mdx'
 
@@ -169,43 +174,9 @@ necessary for this build to succeed and can be found further down the page.
 
 @include 'packer-plugin-sdk/communicator/SSHTemporaryKeyPair-not-required.mdx'
 
-### Optional WinRM fields:
+### WinRM Communicator fields:
 
 @include 'packer-plugin-sdk/communicator/WinRM-not-required.mdx'
-
-## Boot Configuration
-
-@include 'packer-plugin-sdk/bootcommand/VNCConfig.mdx'
-
-@include 'packer-plugin-sdk/bootcommand/BootConfig.mdx'
-
-### Optional:
-
-@include 'packer-plugin-sdk/bootcommand/VNCConfig-not-required.mdx'
-
-@include 'packer-plugin-sdk/bootcommand/BootConfig-not-required.mdx'
-
-## EFI Boot Configuration
-
-@include 'builder/qemu/QemuEFIBootConfig.mdx'
-
-### Optional
-
-@include 'builder/qemu/QemuEFIBootConfig-not-required.mdx'
-
-## SMP Configuration
-
-@include 'builder/qemu/QemuSMPConfig.mdx'
-
-### Optional
-
-@include 'builder/qemu/QemuSMPConfig-not-required.mdx'
-
-### Communicator Configuration
-
-#### Optional:
-
-@include 'packer-plugin-sdk/communicator/Config-not-required.mdx'
 
 ### SSH key pair automation
 
@@ -225,7 +196,17 @@ be accessed using the template engine.
 For example, the public key can be provided in the boot command as a URL
 encoded string by appending `| urlquery` to the variable:
 
-In JSON:
+<Tabs>
+<Tab heading="HCL2">
+
+```hcl
+boot_command = [
+  "<up><wait><tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg PACKER_USER={{ user `username` }} PACKER_AUTHORIZED_KEY={{ .SSHPublicKey | urlquery }}<enter>"
+]
+```
+
+</Tab>
+<Tab heading="JSON">
 
 ```json
 "boot_command": [
@@ -233,13 +214,8 @@ In JSON:
 ]
 ```
 
-In HCL2:
-
-```hcl
-boot_command = [
-  "<up><wait><tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg PACKER_USER={{ user `username` }} PACKER_AUTHORIZED_KEY={{ .SSHPublicKey | urlquery }}<enter>"
-]
-```
+</Tab>
+</Tabs>
 
 A kickstart could then leverage those fields from the kernel command line by
 decoding the URL-encoded public key:
@@ -278,7 +254,35 @@ fi
 %end
 ```
 
-### Troubleshooting
+## Boot Configuration
+
+@include 'packer-plugin-sdk/bootcommand/VNCConfig.mdx'
+
+@include 'packer-plugin-sdk/bootcommand/BootConfig.mdx'
+
+<b>Optional fields:</b>
+
+@include 'packer-plugin-sdk/bootcommand/VNCConfig-not-required.mdx'
+
+@include 'packer-plugin-sdk/bootcommand/BootConfig-not-required.mdx'
+
+## EFI Boot Configuration
+
+@include 'builder/qemu/QemuEFIBootConfig.mdx'
+
+<b>Optional fields:</b>
+
+@include 'builder/qemu/QemuEFIBootConfig-not-required.mdx'
+
+## SMP Configuration
+
+@include 'builder/qemu/QemuSMPConfig.mdx'
+
+<b>Optional fields:</b>
+
+@include 'builder/qemu/QemuSMPConfig-not-required.mdx'
+
+## Troubleshooting
 
 #### Invalid Keymaps
 
