@@ -153,6 +153,15 @@ necessary for this build to succeed and can be found further down the page.
 
 @include 'packer-plugin-sdk/shutdowncommand/ShutdownConfig-not-required.mdx'
 
+~> **Note:** When a communicator (`ssh` or `winrm`) is used and
+`shutdown_command` is left empty, Packer forcefully halts the virtual machine by
+terminating the QEMU process once provisioning completes, even if a shutdown
+command was issued from within a provisioning script. A graceful, in-guest
+shutdown is only performed when `shutdown_command` is set, in which case Packer
+runs that command and waits up to `shutdown_timeout` for the machine to power
+off. When `communicator` is set to `none`, Packer instead waits up to
+`shutdown_timeout` for the guest to power off on its own.
+
 ## Communicator configuration
 
 ### Optional common fields:
