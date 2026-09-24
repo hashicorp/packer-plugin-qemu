@@ -7,6 +7,7 @@ integration {
   name = "QEMU"
   description = "The Qemu Packer Plugin comes with a single builder able to create KVM virtual machine images."
   identifier = "packer/hashicorp/qemu"
+  flags = ["hcp-ready"]
   component {
     type = "builder"
     name = "QEMU"
