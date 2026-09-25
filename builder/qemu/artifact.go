@@ -5,7 +5,10 @@ package qemu
 
 import (
 	"fmt"
+	"log"
 	"os"
+
+	registryimage "github.com/hashicorp/packer-plugin-sdk/packer/registry/image"
 )
 
 // Artifact is the result of running the Qemu builder, namely a set
@@ -33,6 +36,25 @@ func (a *Artifact) String() string {
 }
 
 func (a *Artifact) State(name string) interface{} {
+	if name == registryimage.ArtifactStateURI {
+		diskName, _ := a.state["diskName"].(string)
+		opts := []registryimage.ArtifactOverrideFunc{
+			registryimage.WithProvider("qemu"),
+			registryimage.WithID(diskName),
+			registryimage.WithRegion(a.dir),
+		}
+		if sourceImage, ok := a.state["sourceImage"].(string); ok {
+			opts = append(opts, registryimage.WithSourceID(sourceImage))
+		}
+		img, err := registryimage.FromArtifact(a, opts...)
+		if err != nil {
+			log.Printf("[DEBUG] error encountered when creating a registry image %v", err)
+			return nil
+		}
+
+		return img
+	}
+
 	return a.state[name]
 }
 
