@@ -38,10 +38,15 @@ func (a *Artifact) String() string {
 func (a *Artifact) State(name string) interface{} {
 	if name == registryimage.ArtifactStateURI {
 		diskName, _ := a.state["diskName"].(string)
-		img, err := registryimage.FromArtifact(a,
+		opts := []registryimage.ArtifactOverrideFunc{
+			registryimage.WithProvider("qemu"),
 			registryimage.WithID(diskName),
 			registryimage.WithRegion(a.dir),
-		)
+		}
+		if sourceImage, ok := a.state["sourceImage"].(string); ok {
+			opts = append(opts, registryimage.WithSourceID(sourceImage))
+		}
+		img, err := registryimage.FromArtifact(a, opts...)
 		if err != nil {
 			log.Printf("[DEBUG] error encountered when creating a registry image %v", err)
 			return nil

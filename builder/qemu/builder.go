@@ -218,6 +218,9 @@ func (b *Builder) Run(ctx context.Context, ui packersdk.Ui, hook packersdk.Hook)
 
 	artifact.state["generated_data"] = state.Get("generated_data")
 	artifact.state["diskName"] = b.config.VMName
+	if len(b.config.ISOUrls) > 0 {
+		artifact.state["sourceImage"] = b.config.ISOUrls[0]
+	}
 
 	// placed in state in step_create_disk.go
 	diskpaths, ok := state.Get("qemu_disk_paths").([]string)
