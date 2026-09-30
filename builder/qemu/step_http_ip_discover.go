@@ -23,7 +23,12 @@ func (s *stepHTTPIPDiscover) Run(ctx context.Context, state multistep.StateBag) 
 
 	hostIP := ""
 
-	if config.NetBridge == "" {
+	// A specific http_bind_address is the address the HTTP server listens on,
+	// so guests should reach it there. Skip wildcards; those still need NAT or
+	// bridge discovery.
+	if config.HTTPAddress != "" && config.HTTPAddress != "0.0.0.0" && config.HTTPAddress != "::" {
+		hostIP = config.HTTPAddress
+	} else if config.NetBridge == "" {
 		hostIP = "10.0.2.2"
 	} else {
 		bridgeInterface, err := net.InterfaceByName(config.NetBridge)
