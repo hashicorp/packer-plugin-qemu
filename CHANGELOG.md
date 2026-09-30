@@ -1,3 +1,14 @@
+## 1.1.7 (Unreleased)
+
+### IMPROVEMENTS
+
+* Add support for the `winrm_retry_interval` and `winrm_connect_timeout` options, and update dependencies. [GH-256]
+* Publish QEMU artifact metadata, including provider and source image details, to the HCP Packer registry. [GH-257]
+
+### BUG FIXES
+
+* Use `http_bind_address` for `HTTPIP` when it is set to a specific IP address. [GH-254]
+
 ## 1.1.6 (July 16, 2026)
 
 ### IMPROVEMENTS
