@@ -1,4 +1,4 @@
-## 1.1.7 (Unreleased)
+## 1.1.7 (September 30, 2026)
 
 ### IMPROVEMENTS
 
