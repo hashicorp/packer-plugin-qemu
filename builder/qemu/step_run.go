@@ -73,7 +73,7 @@ func (s *stepRun) Cleanup(state multistep.StateBag) {
 	}
 }
 
-func (s *stepRun) getDefaultArgs(config *Config, state multistep.StateBag) map[string]interface{} {
+func (s *stepRun) getDefaultArgs(config *Config, state multistep.StateBag) (map[string]interface{}, error) {
 
 	defaultArgs := make(map[string]interface{})
 
@@ -193,11 +193,14 @@ func (s *stepRun) getDefaultArgs(config *Config, state multistep.StateBag) map[s
 		defaultArgs["-vga"] = config.VGA
 	}
 
-	deviceArgs, driveArgs := s.getDeviceAndDriveArgs(config, state)
+	deviceArgs, driveArgs, err := s.getDeviceAndDriveArgs(config, state)
+	if err != nil {
+		return nil, err
+	}
 	defaultArgs["-device"] = deviceArgs
 	defaultArgs["-drive"] = driveArgs
 
-	return defaultArgs
+	return defaultArgs, err
 }
 
 func getVncConnectionMessage(headless bool, vnc string, vncPass string) string {
@@ -224,7 +227,7 @@ func getVncConnectionMessage(headless bool, vnc string, vncPass string) string {
 	return ""
 }
 
-func (s *stepRun) getDeviceAndDriveArgs(config *Config, state multistep.StateBag) ([]string, []string) {
+func (s *stepRun) getDeviceAndDriveArgs(config *Config, state multistep.StateBag) ([]string, []string, error) {
 	var deviceArgs []string
 	var driveArgs []string
 	availableScsiIndex := 0
@@ -305,11 +308,29 @@ func (s *stepRun) getDeviceAndDriveArgs(config *Config, state multistep.StateBag
 
 	// EFI
 	if config.QemuEFIBootConfig.EnableEFI {
-		// CODE binary is loaded readonly
-		driveArgs = append(driveArgs, fmt.Sprintf("file=%s,if=pflash,unit=0,format=raw,readonly=on", config.QemuEFIBootConfig.OVMFCode))
-		efivar := state.Get(efivarStateKey)
-		// the local copy of VARS is not
-		driveArgs = append(driveArgs, fmt.Sprintf("file=%s,if=pflash,unit=1,format=raw", efivar.(string)))
+		// Check format of CODE binary and load as read-only
+		codePath := config.QemuEFIBootConfig.OVMFCode
+		codeQCOW2, err := isQCOW2(codePath)
+		if err != nil {
+			return nil, nil, err
+		}
+		codeFormat := "raw"
+		if codeQCOW2 {
+			codeFormat = "qcow2"
+		}
+		driveArgs = append(driveArgs, fmt.Sprintf("file=%s,if=pflash,unit=0,format=%s,readonly=on", codePath, codeFormat))
+
+		// Check format of VARS file and load as writable
+		varsPath := state.Get(efivarStateKey)
+		varsQCOW2, err := isQCOW2(varsPath.(string))
+		if err != nil {
+			return nil, nil, err
+		}
+		varsFormat := "raw"
+		if varsQCOW2 {
+			varsFormat = "qcow2"
+		}
+   		driveArgs = append(driveArgs, fmt.Sprintf("file=%s,if=pflash,unit=1,format=%s", varsPath.(string), varsFormat))
 	}
 
 	// TPM
@@ -317,7 +338,7 @@ func (s *stepRun) getDeviceAndDriveArgs(config *Config, state multistep.StateBag
 		deviceArgs = append(deviceArgs, fmt.Sprintf("%s,tpmdev=tpm0", config.TPMType))
 	}
 
-	return deviceArgs, driveArgs
+	return deviceArgs, driveArgs, nil
 }
 
 func (s *stepRun) applyUserOverrides(defaultArgs map[string]interface{}, config *Config, state multistep.StateBag) ([]string, error) {
@@ -415,7 +436,10 @@ func (s *stepRun) applyUserOverrides(defaultArgs map[string]interface{}, config 
 }
 
 func (s *stepRun) getCommandArgs(config *Config, state multistep.StateBag) ([]string, error) {
-	defaultArgs := s.getDefaultArgs(config, state)
+	defaultArgs, err := s.getDefaultArgs(config, state)
+	if err != nil {
+		return nil, err
+	}
 
 	return s.applyUserOverrides(defaultArgs, config, state)
 }
