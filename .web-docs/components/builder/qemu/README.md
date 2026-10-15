@@ -1441,6 +1441,15 @@ number of available vCPUs is `sockets * cores * threads`.
 <!-- End of code generated from the comments of the Config struct in communicator/config.go; -->
 
 
+## Build Shared Information Variables
+
+This builder shares generated data with provisioners and post-processors via [template engines](/packer/docs/templates/legacy_json_templates/engine)
+for JSON and [contextual variables](/packer/docs/templates/hcl_templates/contextual-variables) for HCL2.
+
+The generated variable available for this builder is:
+
+- `VNCPort` - The port used by the builder for VNC access.
+
 ### SSH key pair automation
 
 The QEMU builder can inject the current SSH key pair's public key into
