@@ -584,8 +584,8 @@ type Config struct {
 	// used unless it is specified in this option.
 	VMName string `mapstructure:"vm_name" required:"false"`
 	// The interface to use for the CDROM device which contains the ISO image.
-	// Allowed values include any of `ide`, `scsi`, `virtio` or
-	// `virtio-scsi`. The Qemu builder uses `virtio` by default.
+	// Allowed values include any of `ide`, `scsi`, `virtio`, `virtio-scsi`, or
+	// `none`. The Qemu builder uses `virtio` by default.
 	// Some ARM64 images require `virtio-scsi`.
 	CDROMInterface string `mapstructure:"cdrom_interface" required:"false"`
 	// Use a virtual (emulated) TPM device to expose to the VM.
