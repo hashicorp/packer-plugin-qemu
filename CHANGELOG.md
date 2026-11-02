@@ -1,4 +1,10 @@
-## 1.1.7 (Unreleased)
+## 1.1.8 (November 2, 2026)
+
+### IMPROVEMENTS
+
+* Update Go to 1.26.10 and update dependencies, including `github.com/hashicorp/packer-plugin-sdk` from 0.6.11 to 0.6.13 and `github.com/hashicorp/hcl/v2` from 2.24.0 to 2.25.0. [GH-269]
+
+## 1.1.7 (September 30, 2026)
 
 ### IMPROVEMENTS
 
