@@ -10,7 +10,7 @@ To install this plugin add this code into your Packer configuration and run [pac
 packer {
   required_plugins {
     qemu = {
-      version = "~> 1"
+      version = ">= 1.1.8"
       source  = "github.com/hashicorp/qemu"
     }
   }
