@@ -497,7 +497,8 @@ type Config struct {
 	//
 	// This is a template engine and allows access to the following variables:
 	// `{{ .HTTPIP }}`, `{{ .HTTPPort }}`, `{{ .HTTPDir }}`,
-	// `{{ .OutputDir }}`, `{{ .Name }}`, and `{{ .SSHHostPort }}`
+	// `{{ .OutputDir }}`, `{{ .Name }}`, `{{ .SSHHostPort }}`,
+	// `{{ .ISOPath }}`, and `{{ .CDPath }}`.
 	QemuArgs [][]string `mapstructure:"qemuargs" required:"false"`
 	// A map of custom arguments to pass to qemu-img commands, where the key
 	// is the subcommand, and the values are lists of strings for each flag.
