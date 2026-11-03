@@ -17,6 +17,7 @@ import (
 	"github.com/hashicorp/packer-plugin-sdk/multistep"
 	"github.com/hashicorp/packer-plugin-sdk/multistep/commonsteps"
 	packersdk "github.com/hashicorp/packer-plugin-sdk/packer"
+	"github.com/hashicorp/packer-plugin-sdk/packerbuilderdata"
 )
 
 const BuilderId = "transcend.qemu"
@@ -36,7 +37,7 @@ func (b *Builder) Prepare(raws ...interface{}) ([]string, []string, error) {
 		return nil, warnings, errs
 	}
 
-	return nil, warnings, nil
+	return []string{"VNCPort"}, warnings, nil
 }
 
 func (b *Builder) Run(ctx context.Context, ui packersdk.Ui, hook packersdk.Hook) (packersdk.Artifact, error) {
@@ -45,6 +46,15 @@ func (b *Builder) Run(ctx context.Context, ui packersdk.Ui, hook packersdk.Hook)
 	if err != nil {
 		return nil, fmt.Errorf("Failed creating Qemu driver: %s", err)
 	}
+
+	// Setup the state bag
+	state := new(multistep.BasicStateBag)
+	state.Put("config", &b.config)
+	state.Put("debug", b.config.PackerDebug)
+	state.Put("driver", driver)
+	state.Put("hook", hook)
+	state.Put("ui", ui)
+	generatedData := &packerbuilderdata.GeneratedData{State: state}
 
 	steps := []multistep.Step{}
 	if !b.config.ISOSkipCache {
@@ -118,7 +128,9 @@ func (b *Builder) Run(ctx context.Context, ui packersdk.Ui, hook packersdk.Hook)
 				CommConf:            &b.config.CommConfig.Comm,
 				SSHTemporaryKeyPair: b.config.CommConfig.Comm.SSHTemporaryKeyPair,
 			}),
-		new(stepConfigureVNC),
+		&stepConfigureVNC{
+			GeneratedData: generatedData,
+		},
 		&stepPrepareEfivars{
 			EFIEnabled: b.config.QemuEFIBootConfig.EnableEFI,
 			OutputDir:  b.config.OutputDir,
@@ -161,14 +173,6 @@ func (b *Builder) Run(ctx context.Context, ui packersdk.Ui, hook packersdk.Hook)
 			QemuImgArgs:     b.config.QemuImgArgs,
 		},
 	)
-
-	// Setup the state bag
-	state := new(multistep.BasicStateBag)
-	state.Put("config", &b.config)
-	state.Put("debug", b.config.PackerDebug)
-	state.Put("driver", driver)
-	state.Put("hook", hook)
-	state.Put("ui", ui)
 
 	// Run
 	b.runner = commonsteps.NewRunnerWithPauseFn(steps, b.config.PackerConfig, ui, state)
