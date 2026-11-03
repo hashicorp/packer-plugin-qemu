@@ -453,8 +453,8 @@ necessary for this build to succeed and can be found further down the page.
   used unless it is specified in this option.
 
 - `cdrom_interface` (string) - The interface to use for the CDROM device which contains the ISO image.
-  Allowed values include any of `ide`, `scsi`, `virtio` or
-  `virtio-scsi`. The Qemu builder uses `virtio` by default.
+  Allowed values include any of `ide`, `scsi`, `virtio`, `virtio-scsi`, or
+  `none`. The Qemu builder uses `virtio` by default.
   Some ARM64 images require `virtio-scsi`.
 
 - `vtpm` (bool) - Use a virtual (emulated) TPM device to expose to the VM.

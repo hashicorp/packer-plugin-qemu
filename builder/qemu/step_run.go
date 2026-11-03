@@ -227,7 +227,8 @@ func getVncConnectionMessage(headless bool, vnc string, vncPass string) string {
 func (s *stepRun) getDeviceAndDriveArgs(config *Config, state multistep.StateBag) ([]string, []string) {
 	var deviceArgs []string
 	var driveArgs []string
-	availableScsiIndex := 0
+	addedScsiControllerDevice := false
+	availableNoneDriveIndex := 0
 
 	vmName := config.VMName
 	imgPath := filepath.Join(config.OutputDir, vmName)
@@ -249,14 +250,15 @@ func (s *stepRun) getDeviceAndDriveArgs(config *Config, state multistep.StateBag
 				// may be broken, the goal of this commit is to refactor in a way
 				// that creates a result that is testably the same as the old
 				// code. A pr will follow fixing this broken behavior.
-				if availableScsiIndex == 0 {
+				if !addedScsiControllerDevice {
 					deviceArgs = append(deviceArgs, fmt.Sprintf("virtio-scsi-pci,id=scsi%d", 0))
+					addedScsiControllerDevice = true
 				}
 				// TODO: Megan: When you remove above conditional,
 				// set deviceArgs = append(deviceArgs, fmt.Sprintf("scsi-hd,bus=scsi%d.0,drive=drive%d", i, i))
 				deviceArgs = append(deviceArgs, fmt.Sprintf("scsi-hd,bus=scsi0.0,drive=drive%d", i))
 				driveArgumentString = fmt.Sprintf("if=none,file=%s,id=drive%d,cache=%s,discard=%s,format=%s", drivePath, i, config.DiskCache, config.DiskDiscard, config.Format)
-				availableScsiIndex += 1
+				availableNoneDriveIndex += 1
 			}
 			if config.DetectZeroes != "off" {
 				driveArgumentString = fmt.Sprintf("%s,detect-zeroes=%s", driveArgumentString, config.DetectZeroes)
@@ -287,12 +289,16 @@ func (s *stepRun) getDeviceAndDriveArgs(config *Config, state multistep.StateBag
 		if config.CDROMInterface == "" {
 			driveArgs = append(driveArgs, fmt.Sprintf("file=%s,media=cdrom", cdPath))
 		} else if config.CDROMInterface == "virtio-scsi" {
-			if availableScsiIndex == 0 {
+			if !addedScsiControllerDevice {
 				deviceArgs = append(deviceArgs, fmt.Sprintf("virtio-scsi-pci,id=scsi%d", 0))
+				addedScsiControllerDevice = true
 			}
-			driveArgs = append(driveArgs, fmt.Sprintf("file=%s,if=none,index=%d,id=cdrom%d,media=cdrom", cdPath, availableScsiIndex, i))
+			driveArgs = append(driveArgs, fmt.Sprintf("file=%s,if=none,index=%d,id=cdrom%d,media=cdrom", cdPath, availableNoneDriveIndex, i))
 			deviceArgs = append(deviceArgs, "virtio-scsi-device", fmt.Sprintf("scsi-cd,drive=cdrom%d", i))
-			availableScsiIndex += 1
+			availableNoneDriveIndex += 1
+		} else if config.CDROMInterface == "none" {
+			driveArgs = append(driveArgs, fmt.Sprintf("file=%s,if=none,index=%d,id=cdrom%d,media=cdrom", cdPath, availableNoneDriveIndex, i))
+			availableNoneDriveIndex += 1
 		} else {
 			driveArgs = append(driveArgs, fmt.Sprintf("file=%s,if=%s,index=%d,id=cdrom%d,media=cdrom", cdPath, config.CDROMInterface, i, i))
 		}
